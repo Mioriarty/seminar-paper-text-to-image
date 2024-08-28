@@ -5,6 +5,11 @@
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{caption} % For captioning tables and figures
+\usepackage{array} % For more flexible table formatting
+
 
 \begin{document}
 
@@ -27,6 +32,9 @@
 	{\large \today\par}
 \end{titlepage}
 
+\tableofcontents
+\newpage
+
 \section{Introduction}
 1 Seite
 
@@ -48,7 +56,7 @@ First let's assume, all the machine learning components have already their train
 \subsubsection{Conditioning}
 For stable diffusion, the conditioning process is just a series of different existing components plugged together with the goal of semantically understanding the input prompt. First the input sentence gets tokenized. They were using the BERT-Tokenizer\cite{devlin2019bert}. The result of this step is a sequence of tokens, which can be thought of words or part of words. 
 
-Secondly, these tokens get embedded into some Euclidian vector space. Here already some semantic meaning gets encoded. Tokens that have similar meanings will be mapped to vectors that point to approximately the same region in this high-dimensional space. For example the words “achieve” and “accomplish” would be closer than “achieve” and “annoying”. But even more, direction or distances can also be interpretable already. This could be thought of as relations between words. For example, it is expectable that the embedding of “Germany” and “Berlin” have the same distance as “Spain” and “Madrid”. 
+Secondly, these tokens get embedded into some Euclidean vector space. Here already some semantic meaning gets encoded. Tokens that have similar meanings will be mapped to vectors that point to approximately the same region in this high-dimensional space. For example the words “achieve” and “accomplish” would be closer than “achieve” and “annoying”. But even more, direction or distances can also be interpretable already. This could be thought of as relations between words. For example, it is expectable that the embedding of “Germany” and “Berlin” have the same distance as “Spain” and “Madrid”. 
 
 It operates by computing three different vectors for each token in the input sequence for each type of relationship there could be in the sentence: the Query ($Q$), the Key ($K$), and the Value ($V$) vectors. These vectors are derived from the embedded token vectors through linear transformations, which are essentially matrix multiplications with learned weight matrices. Specifically, for each token, we calculate:
 $$Q = X \cdot W_Q,\quad K = X\cdot W_K,\quad V = X \cdot W_V$$
@@ -60,7 +68,7 @@ However, to prevent these dot products from getting too large when working with 
 
 $$\frac{QK^\top}{\sqrt{d_k}}$$
 
-Next, we convert these scaled dot products into attention scores using a softmax function. The softmax function turns these scores into probabilities, where higher scores mean more attention should be given to that token. For example, if "Harry" is the current word, and its Query vector strongly matches the Key vector of "wizard," the attention mechanism will assign a high probability to "wizard," meaning that "Harry" will focus more on "wizard" in this context.
+Next, we convert these scaled dot products into attention scores using a softmax function. The softmax function turns these scores into probabilities, where higher scores mean more attention should be given to that token. For example, if "Harry" is the current word, and its Query vector strongly matches the Key vector of "wizard", the attention mechanism will assign a high probability to "wizard", meaning that "Harry" will focus more on "wizard" in this context.
 
 $$\mathrm{Attention Weights} = \mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)$$
 
@@ -68,16 +76,14 @@ Finally, these attention scores are used to compute a weighted sum of the Value 
 
 $$\mathrm{Output} = \sum_i \mathrm{Attention Weights}_i \cdot V_i$$
 
-This described process is done using many different Key, Query and Value matrices to capture a how range of possible influences words can have on others. The output are context aware token embeddings.
+This described process is done using many Key, Query and Value matrices to capture a how range of possible influences words can have on others. The output are context aware token embeddings.
 
 \subsubsection{Iterative Denoising}
 The iterative denoising is the crucial step in image generation. Remember, the goal is to generate a latent representation of the final image, which can be thought of as a low-dimensional representation or just some smaller image. We start with random noise in that reduced size. Typically, this would be just a random sample from a Gaussian distribution. The aim will then be their step-by-step reversal to obtain clear, detailed images that fit the description from the prompt.
 
-It starts with a noised image, denoted as $x_T$, where $T$ is the total number of steps in the reverse diffusion process. Then the model uses a neural network trained that is trainied to evaluate the function $\varepsilon_\theta(x_t,t,c)$ that estimates the noise at the current noised image $x_t$ in each step, $c$ is the conditioning input. By approximating the current noise, we can just remove the noise, to slightly denoise the image.
-
+It starts with a noised image, denoted as $x_T$, where $T$ is the total number of steps in the reverse diffusion process. Then the model uses a neural network trained that is trained to evaluate the function $\varepsilon_\theta(x_t,t,c)$ that estimates the noise at the current noised image $x_t$ in each step, $c$ is the conditioning input. By approximating the current noise, we can just remove the noise, to slightly denoise the image.
 $$x_{t-1}=x_t-\alpha_t \varepsilon_\theta(x_t,t,c)+ \alpha_t z_t$$
-
-where $\alpha_t$ controls the step size for noise removal, and $\alpha_t z_t$  ($z_t$ is some Gaussian noise) adds controlled noise to maintain some stochasticity. This update moves the noisy image closer to a cleaner version, progressively refining it. This update moves the noisy image closer to a cleaner version, progressively refining it. This step is performed $T$-times, and at $t=0$ we arrived at a denoised latent representation of the final image.
+where $\alpha_t$ controls the step size for noise removal, and $\alpha_t z_t$  ($z_t$ is some Gaussian noise) adds controlled noise to maintain some stochasticity. This update moves the noisy image closer to a cleaner version, progressively refining it. This step is performed $T$-times, and at $t=0$ we arrived at a denoised latent representation of the final image.
 
 \paragraph{U-Net (Add image!!!)}
 One might wander, how do we calculate $\varepsilon_\theta(x_t,t,c)$ and thus approximate the current noise. This is done using a neural network architecture called U-Net\cite{ronneberger2015unetconvolutionalnetworksbiomedical}, that is well-suited for tasks where you need to transform one image into another, as we need it here.
@@ -120,26 +126,54 @@ The training objective is formulated as a mean squared error (MSE) between the p
 \section{Experiments}
 Here our goal was, to test the reproducibility of the papers, we researched on. As it is computationally not feasible to reproduce every single result, we found one experiment per paper for us to redo. While doing so, we also comment on the quality of the methods and descriptions of the methods used in the papers. 
 
-\subsection{The FID score of Stable Diffusion}
+\subsection{The FID of Stable Diffusion}
 \subsubsection{Selection of the experiment and background}
 Before looking closer into the kinds of experiments that were done by the stable diffusion team, it was clear that we could not reproduce any training related experiments, as these are generally computationally very expensive. The evaluation metrics looked more promising to us, where certain score where compared with then state-of-the-art models. Most notably, the FID-Score was calculated over different datasets. 
 
-The FID (Fréchet Inception Distance)\cite{heusel2018ganstrainedtimescaleupdate} score is a metric used to evaluate the quality of images generated by generative models or text-to-image models. It compares the distribution of generated images with the distribution of real images, providing a measure of how similar the generated images are to the real ones. The FID score calculates the Fréchet distance between two multivariate Gaussian distributions, one representing the features of real images and the other representing the features of generated images. These features are typically extracted using a pre-trained Inception v3 model. If $P_r$ is the distribution of the real images and $P_g$ of the genareted images, $\mu_p, \mu_g$ the respective means and $\Sigma_p, \Sigma_g$ the respective covariance matricies, than the FID score can be calculated with:
+The FID (Fréchet Inception Distance)\cite{heusel2018ganstrainedtimescaleupdate} score is a metric used to evaluate the quality of images generated by generative models or text-to-image models. It compares the distribution of generated images with the distribution of real images, providing a measure of how similar the generated images are to the real ones. The FID score calculates the Fréchet distance between two multivariate Gaussian distributions, one representing the features of real images and the other representing the features of generated images. These features are typically extracted using a pre-trained Inception v3 model. If $P_r$ is the distribution of the real images and $P_g$ of the generated images, $\mu_p, \mu_g$ the respective means and $\Sigma_p, \Sigma_g$ the respective covariance matrices, than the FID score can be calculated with:
 $$\mathrm{FID}(P_r, P_g) = \Vert\mu_r - \mu_g\Vert_2^2 + \mathrm{Tr}\left(\Sigma_r + \Sigma_p - 2 (\Sigma_r\Sigma_g)^\frac{1}{2}\right)$$
 A lower FID Score indicates that the generated images are more similar to real images, implying higher quality while a higher FID Score suggests that there is a greater discrepancy between the distributions of real and generated images, indicating lower quality.
 
 Analyzing the results in the paper, we noticed that a different rendering of Stable Diffusion was used dependent on the dataset. The parameter that were changed, were mostly the dimensionality of the latent space and the number of diffusion steps. This seems odd, as it might hint towards cherry-picking the best result possible by the researchers. Also, a hypothesis tests was omitted, making reproducing these experiments more useful and interesting, so we could give another hint, that the results were not in fact by chance as good.
 
 \subsubsection{Experiment description and methodology}
-As the text-to-image capabilities of Stable Diffusion were the main focus for us, we chose to reproduce the "Text-Conditional Image Synthesis" experiment in the original paper. In there, the FID score based on the MS-COCO validation dataset\cite{lin2015microsoftcococommonobjects} was calculated and compared against the result of other state-of-the-art text-to-image models of the time. Is described above, a super specific version of Stable Diffusion was chosen to achieve this result. In this case, there have been $250$ diffusion steps with a $8$ times smaller latent space. In the paper a FID score of $23.31$ was given.
+As the text-to-image capabilities of Stable Diffusion were the main focus for us, we chose to reproduce the "Text-Conditional Image Synthesis" experiment in the original paper. In there, the FID score based on the MS-COCO validation dataset\cite{lin2015microsoftcococommonobjects} was calculated and compared against the result of other state-of-the-art text-to-image models of the time. Is described above, a super specific version of Stable Diffusion was chosen to achieve this result. In this case, there have been $250$ diffusion steps with an $8$ times smaller latent space. The paper provided a FID score of $23.31$ and IS of $20.03 \pm 0.33$.
 
-To analyze also the stability of this result, we not only calculate the FID score for $250$ diffusion steps, but also for $10$, $50$ and $100$. In the experiment be proceede as follows. For every image in the dataset, we fetch its caption and let Stable Diffusion generate the image using the caption. This way we reproduce the images in the MS-COCO validation dataset. Afterwards we need to scale the images, such that they all have the same dimensions. We chose a dimension of $299\times299$. Finally, we run \texttt{torch-fidelity} by pytorch. This process is repeated for the different diffusion step numbers. The code can be found in the attachments. (TODO!!!!!!)
+In the experiment be proceede as follows. For every image in the dataset, we fetch its caption and let Stable Diffusion generate the image using the caption. This way we reproduce the images in the MS-COCO validation dataset. Afterwards we need to scale the images, such that they all have the same dimensions. We chose a dimension of $299\times299$. Finally, we run \texttt{torch-fidelity}\cite{obukhov2020torchfidelity} by PyTorch. This process is repeated for the different diffusion step numbers. The code can be found in the attachments. (TODO!!!!!!)
 
 \subsubsection{Results}
-10 - ....
-50 - 117
-100 - 67.86333 (To check)
-250 - 
+\begin{table}
+    \centering
+    \begin{tabular}{l|c}
+        & \textbf{FID} \\
+        \hline
+        \textbf{Original Paper} & $23.31$  \\
+        \textbf{Our result} & $24.56$  \\
+		\hline
+		CogView \cite{ding2021cogviewmasteringtexttoimagegeneration} & $27.10$  \\
+		LAFITE \cite{zhou2022lafitelanguagefreetrainingtexttoimage} & $26.94$  \\
+		GLIDE \cite{rezende2014stochasticbackpropagationapproximateinference} & $12.24$  \\
+		Make-A-Scene \cite{gafni2022makeascenescenebasedtexttoimagegeneration} & $11.84$ 
+    \end{tabular}
+    \caption{Comparison of FID score of the paper and other models with our results}
+    \label{tab:fid_is_comparison}
+\end{table}
+
+As it can be seen in Tab. \ref{tab:fid_is_comparison}, the FID score is slightly worse. As error bounds for the FID score had not been provided and also no hypothesis testing was performed, it is tricky to exactly evaluate this outcome. The other image generating model's metrics shown are the same, Stable Diffusion was compared to in the original paper. And at least, we see that Stable Diffusion's ranking didn't change when using our metrics within the provided examples.
+
+Nevertheless, there is a non-neglectable difference between the FID scores. This might have arisen from a variety of reasons: differences in the calculation pipeline, e.g. by a more modern version of \texttt{torch-fidelity} for instance by a newer Inception model, randomness in the generated image data or slightly different preprocessing. 
+
+\subsubsection{Stability of the FID score}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{assets/num_samples_comparison.png}\par\vspace{0.5cm}
+    \caption{FID scores for datasets in different sizes. Here subsets of MS-COCO where used with 250 diffusion steps.}
+    \label{fig:num_samples_comparison}
+\end{figure}
+
+In general, we found the TID score to be very unstable. It can only be compared between models, where all the calculation and pipeline steps are exactly the same. To illustrate this phenomenon, we calculated the FID for different numbers of samples. The MS-COCO validation dataset, has 5000 images. We took subsets of this dataset in various sizes and computed the FID score again just as described on top. The results can be seen in fig. \ref{fig:num_samples_comparison}. As you can see, there is a consistent downwards trend, which indicates that the more samples exists in a given dataset, the better the TID score is. This happens because the FID score measures the difference between two feature distribution. With fewer data points, this difference is more susceptible for outliers, which increases the calculated difference. We would like to highlight that the FID is not only less accurate with fewer data points but simply worse.
+
+We were also interested in the FID score when varying the number of diffusion steps. As we didn't have the computation power, to generate 5000 images per number of diffusion steps, we only used a subset of 2000 images of the MS-COCO dataset. 
 
 \newpage
 
@@ -162,7 +196,7 @@ A serous concern relates to biases, those models impose and the generated images
 
 Further consequences of the underrepresentation of the Global South are usability issues. In a cooperation of computer scientists from US, Canada and Bangladesh\cite{mim2024impactoftexttoimagetoolsinglobalsouth}, a survey of Bangladeshi image practitioners was conducted. It was found that Bangladeshi had problems creating the text prompts. Citing one of their participants \textit{"Text-based prompts need proficiency in English nouns and adjectives to explain the idea of an image to the GAI [Generative AI] system to receive an outcome that matches the image practitioner's imagination."} Another participant complained, that specific Bangla words, do not have accurate English translation, in this case she wanted to describe a certain type of rain. Furthermore, often times the participants are poorly educated, such that, even if text-prompts were possible in their mother tong, they wouldn't be able to accurately articulate their perception of the image. Even worse, most of the participants rely on the usage of the free image generating technology, as traditional, more professional applications like \textit{Adobe Photoshop} or \textit{Adobe Illustrator} or financially not feasible. Also in this study impacts of the underrepresentation of data from the global south were found. They asked Midjourney, to depict a future version of Gawsia market, which resulted in an image, where neither the architectural characteristics nor the physical appearances of the people match those typically whitnisable in Dhaka.
 
-Moving again to the Western world, especially when using generated images in commercial contexts, one question that has not been answered yet, is the question of copyright. To whom does a generated image belong? There are many possible answers: The artists, who created the training data, the company, who trained the text-to-image model, or the user, who created the text prompt. Currently, there are numerous lawsuits conducted on this topic. Most relevantly, Getty Images (a leading global stock photography and media company) has brought Stability AI (the company behind Stable Diffusion) to court accusing it of unlawfully using millions of its copyrighted images to train Stable Diffusion models without permission.\cite{cnn2023gettyimagesvsstabilityai}
+Moving again to the Western world, especially when using generated images in commercial contexts, one question that has not been answered yet, is the question of copyright. To whom does a generated image belong? There are many possible answers: The artists, who created the training data, the company, who trained the text-to-image model, or the user, who created the text prompt. Currently, there are numerous lawsuits conducted on this topic. Most relevantly, Getty Images (a leading global stock photography and media company) has brought Stability AI (the company behind Stable Diffusion) to court accusing it of unlawfully using millions of its copyrighted images to train Stable Diffusion models without permission\cite{cnn2023gettyimagesvsstabilityai}.
 
 \subsection{Conclusion}
 
