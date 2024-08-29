@@ -2,6 +2,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[margin=1.25in]{geometry}
+\usepackage{subcaption}
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
@@ -166,14 +167,47 @@ Nevertheless, there is a non-neglectable difference between the FID scores. This
 \subsubsection{Stability of the FID score}
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/num_samples_comparison.png}\par\vspace{0.5cm}
-    \caption{FID scores for datasets in different sizes. Here subsets of MS-COCO where used with 250 diffusion steps.}
-    \label{fig:num_samples_comparison}
+    % First subfigure: The plot you created
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{assets/num_samples_comparison.pdf}
+        \caption{FID scores for datasets in different sizes.}
+        \label{fig:num_samples_comparison}
+    \end{subfigure}
+    \hfill
+    % Second subfigure: The PDF file 'num_samples_comparison_corrected.pdf'
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{assets/num_samples_comparison_corrected.pdf}
+        \caption{Graph of proposed corrected FID score.}
+        \label{fig:num_samples_comparison_corrected}
+    \end{subfigure}
+    \caption{Comparison of FID scores across different sample sizes. Here, subsets of MS-COCO where used with 250 diffusion steps.}
 \end{figure}
 
 In general, we found the TID score to be very unstable. It can only be compared between models, where all the calculation and pipeline steps are exactly the same. To illustrate this phenomenon, we calculated the FID for different numbers of samples. The MS-COCO validation dataset, has 5000 images. We took subsets of this dataset in various sizes and computed the FID score again just as described on top. The results can be seen in fig. \ref{fig:num_samples_comparison}. As you can see, there is a consistent downwards trend, which indicates that the more samples exists in a given dataset, the better the TID score is. This happens because the FID score measures the difference between two feature distribution. With fewer data points, this difference is more susceptible for outliers, which increases the calculated difference. We would like to highlight that the FID is not only less accurate with fewer data points but simply worse.
 
-We were also interested in the FID score when varying the number of diffusion steps. As we didn't have the computation power, to generate 5000 images per number of diffusion steps, we only used a subset of 2000 images of the MS-COCO dataset. 
+As you can see in fig \ref{fig:num_samples_comparison}, the downwards trend inherits a predictable pattern. By linear regression of the log-log-plot, we were able to match the function
+$$ y(x) = c\cdot \frac{1}{x^p} \qquad\mathrm{with}\quad p = 0.607,\, c = 4208.3$$
+onto our data points. Equipped with this knowledge, we are able to propose a corrected FID score, by multiplying the FID score with the number of samples, the score was calculated with, to the $(-p)$-th power. The results can be viewed in fig. \ref{fig:num_samples_comparison_corrected}. This correction enables us to compare FID scores of different dataset sizes and also yields to the more desirable behavior, that the FID score is just less accurate for lower sample sizes and not straight up greater. 
+
+There are clear open question, that require more research. $p$ and $c$ might depend on the dataset and/or the image-generating model, rendering the proposed correction useless. On the other hand, if at least $p$ is a global value for the FID score in general, this method makes FID scores of datasets of different sizes comparable. Maybe there is even a the
+
+We were also interested in the FID score when varying the number of diffusion steps. As we didn't have the computation power, to generate 5000 images per number of diffusion steps, we only used a subset of 1780 images of the MS-COCO dataset. We consider the FID calculation with more than 1750 images a sufficiently stable – at least in our case – as from there on the corrected FID is roughly constant (Fig. \ref{fig:num_samples_comparison_corrected}). The results can be seen in \ref{fig:ddms_comparison}.
+\begin{figure}[h]
+    \centering
+	\includegraphics[width=0.4\textwidth]{assets/ddms_comparison.pdf}
+	\caption{FID score by number of diffusion step for a subset of MS-COCO of size 1750.}
+	\label{fig:ddms_comparison}
+\end{figure}
+
+As you can see, the FID score already settles at 50 diffusion steps, indicating constant quality from there on out. In fig. \ref{fig:ddms_image_comparison} you can make up your own mind. There we compared the different generated images for different prompts.
+
+\begin{figure}[h!]
+    \centering
+	\includegraphics[width=0.85\textwidth]{assets/ddms_image_comparison.pdf}
+	\caption{Generated images with different numbers of diffusion steps. On the right, the reference image from the MS-COCO dataset. The prompts where (1) \textit{A woman standing on skiis while posing for the camera.} (2) \textit{Suitcase sitting on the ground with stickers from various countries on it.} (3) \textit{A green car has parked on the curb in a parking lot.} (4) \textit{A corner of a kitchen with a big fridge.} (5) \textit{A small elephant walks underneath a big elephant.}} 
+	\label{fig:ddms_image_comparison}
+\end{figure}
+
 
 \newpage
 
