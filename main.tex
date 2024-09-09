@@ -41,6 +41,9 @@
 
 \section{Related Work}
 1 - 2 Seiten. Einfach nur related work von Papern abschreiben
+
+\include{controlnet/related_work}
+
 \section{Background}
 \subsection{Stable Diffusion}
 In the beginning of 2022, computer scientists from LMU Munich and IWR Heidelberg proposed an improved approach on how to achieve high-resolution image synthesis\cite{rombach2022stablediffusion}. They coined this method “latent diffusion models”. It introduced the necessary performance boost to make productively using and training image models feasible on a large scale. But diffusion models were known before. The new idea was to not generate the full image using iterative diffusion but to generate a low-dimensional representation of that image first using denoising and then to upscale it. This small change was enough to accomplish the required performance boost. Later the descendant model family was called “Stable Diffusion”.
@@ -125,7 +128,7 @@ The core task of the U-Net is to predict the noise that was added to a given noi
 
 The training objective is formulated as a mean squared error (MSE) between the predicted noise and the actual noise. By minimizing this loss, the U-Net learns to accurately estimate the noise at each step, enabling it to reverse the diffusion process during inference, effectively denoising the image and recovering the clean latent representation.
 
-
+\include{controlnet/background}
 
 
 \newpage
@@ -213,6 +216,7 @@ As you can see, the FID score already settles at 50 diffusion steps, indicating 
 	\label{fig:ddms_image_comparison}
 \end{figure}
 
+\include{controlnet/experiments}
 
 \newpage
 
