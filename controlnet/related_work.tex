@@ -1,2 +1,65 @@
 \subsection{ControlNet}
-This is the related work section for controlnet
+This subsection builds on related literature \cite{zhang2023addingconditionalcontroltexttoimage} 
+to explain other works contributing to the development of ControlNet. They can be seperated into
+the finetuning of neural networks, image diffusion and image-to-image translation.
+
+\subsubsection{Finetuning Neural Networks}
+Finetuning neural networks can result in common issues like overfitting, mode collapse, and 
+catastrophic forgetting. Several methodologies go into overcoming these challenges. 
+HyperNetworks initially applied in natural language processing (NLP) train a smaller neural 
+network to predict the weights of another typically larger neural network. More recently, 
+this method has also been applied for image generation with GANs and Stable Diffusion 
+\cite{rombach2022stablediffusion} to modify output styles 
+\cite{alaluf2022hyperstylestyleganinversionhypernetworks, dinh2022hyperinverterimprovingstyleganinversion}.
+Adapter methods embed new layers into pretrained models, commonly used in NLP for 
+task-specific customization \cite{houlsby2019parameterefficienttransferlearningnlp, stickland2019bertpalsprojectedattention}
+and in computer vision for incremental learning \cite{rosenfeld2018incrementallearningdeepadaptation} 
+and domain adaptation \cite{rebuffi2018efficientparametrizationmultidomaindeep}. 
+Recent successes include applications in vision transformers
+\cite{li2022exploringplainvisiontransformer, li2021benchmarkingdetectiontransferlearning} 
+and ViT-Adapter \cite{chen2023visiontransformeradapterdense}, 
+as well as the development of T2I-Adapter for adapting Stable Diffusion to external 
+conditions \cite{mou2023t2iadapterlearningadaptersdig}.
+Additive Learning avoids forgetting by freezing the original model and 
+adding parameters through weight masks~\cite{mallya2018piggybackadaptingsinglenetwork, rosenfeld2018incrementallearningdeepadaptation}, 
+pruning \cite{mallya2018packnetaddingmultipletasks}, or hard attention \cite{serrà2018overcomingcatastrophicforgettinghard}. 
+Side-Tuning \cite{zhang2020sidetuningbaselinenetworkadaptation} integrates new functionalities 
+via a side branch by mixing outputs of the original and new networks. Low-Rank Adaptation 
+(LoRA) \cite{hu2021loralowrankadaptationlarge} circumvents forgetting by learning the 
+parameter offsets with low-rank matrices, based on the idea that many over-parameterized 
+models lie in lowdimensional subspaces~\cite{aghajanyan2020intrinsicdimensionalityexplainseffectiveness, li2018measuringintrinsicdimensionobjective}. 
+Zero-initialized layers, as used by ControlNet, are convolution layers initialized to zero, inspired 
+from diffusion models and several other works discussing the initialization and manipulation
+of network weights \cite{lecun2015deeplearning,rombach2022stablediffusion, karras2018progressivegrowinggansimproved}.
+
+\subsubsection{Image Diffusion}
+Image Diffusion Models, first proposed by Sohl-Dickstein et al. \cite{sohldickstein2015deepunsupervisedlearningusing}, 
+have enjoyed extensive success in the image generation task \cite{dhariwal2021diffusionmodelsbeatgans, kingma2023variationaldiffusionmodels}. 
+Latent Diffusion Models (LDM) \cite{rombach2022stablediffusion} perform diffusion processes 
+in the latent space which allows for cheaper computations. Text-to-image diffusion models rely 
+on a pre-trained language model like CLIP \cite{radford2021learningtransferablevisualmodels} 
+to first convert the text inputs to latent vectors to achieve state-of-the-art performance. 
+Notable models include Glide for text-guided image generation and editing \cite{nichol2022glidephotorealisticimagegeneration}, 
+as well as Stable Diffusion, a large-scale LDM \cite{rombach2022stablediffusion}. Commercial 
+implementations include DALL-E2 \cite{2023dalle2} and Midjourney~\cite{2023midjourney}. 
+The ability to control image diffusion models enables the creation of personalized, customized
+as well as task-specific image synthesis. This can be done by the manipulation of prompt 
+engineering, CLIP features, and cross-attention among others 
+\cite{parmar2023zeroshotimagetoimagetranslation, gafni2022makeascenescenebasedtexttoimagegeneration}. 
+Examples include MakeAScene \cite{gafni2022makeascenescenebasedtexttoimagegeneration} and 
+SpaText \cite{Avrahami_2023} for segmentation mask control, GLIGEN for 
+learning parameters from an attention layer \cite{li2023gligenopensetgroundedtexttoimage}, 
+and Textual Inversion and DreamBooth for personalizing content with user-provided images 
+\cite{gal2022imageworthwordpersonalizing, ruiz2023dreamboothfinetuningtexttoimage}. 
+Alternative approaches are prompt-driven modifications \cite{brooks2023instructpix2pixlearningfollowimage, huang2023regionawarediffusionzeroshottextdriven, tumanyan2022plugandplaydiffusionfeaturestextdriven} 
+and optimization techniques based on sketches \cite{voynov2022sketchguidedtexttoimagediffusionmodels}.
+
+\subsubsection{Image-to-Image Translation}
+Image-to-image translation leverages conditional GANs \cite{isola2018imagetoimagetranslationconditionaladversarial, wang2018highresolutionimagesynthesissemantic, zhou2021cocosnetv2fullresolutioncorrespondence, zhu2018multimodalimagetoimagetranslation} 
+and transformers \cite{chen2021pretrainedimageprocessingtransformer,ramesh2021zeroshottexttoimagegeneration} 
+for mapping across image domains. The Taming Transformer represents one such vision 
+transformer method \cite{esser2021tamingtransformershighresolutionimage}. Palette and PITI are 
+representatives of conditional diffusion models for image-to-image translation; Palette is 
+trained from scratch, whereas PITI relies on pretraining \cite{saharia2022paletteimagetoimagediffusionmodels, wang2022pretrainingneedimagetoimagetranslation}. 
+Lastly, the manipulation of pretrained GANs, such as StyleGANs controlled by extra encoders, has been 
+extensively studied \cite{richardson2021encodingstylestyleganencoder}.
