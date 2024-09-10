@@ -46,6 +46,7 @@
 
 \section{Background}
 \subsection{Stable Diffusion}
+\label{heading:subsection:stable_diffusion}
 In the beginning of 2022, computer scientists from LMU Munich and IWR Heidelberg proposed an improved approach on how to achieve high-resolution image synthesis\cite{rombach2022stablediffusion}. They coined this method “latent diffusion models”. It introduced the necessary performance boost to make productively using and training image models feasible on a large scale. But diffusion models were known before. The new idea was to not generate the full image using iterative diffusion but to generate a low-dimensional representation of that image first using denoising and then to upscale it. This small change was enough to accomplish the required performance boost. Later the descendant model family was called “Stable Diffusion”.
 
 In this chapter, we will provide an overview of the inner working of stable diffusion and thereby focus on the text-to-image procedure. Later we will also demonstrate how this can be extended to also implement e.g. in-painting. It mainly consists of three parts:
