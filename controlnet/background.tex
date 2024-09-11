@@ -29,7 +29,7 @@ We demonstrate Zhang et al.'s integration of ControlNet with a large pretrained 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{assets/control_net_sd_architecture.pdf}
-    \caption{A simplified description used in ``Adding Conditional Control to Text-To-Image Diffusion Models''~\cite{zhang2023addingconditionalcontroltexttoimage} to explain ControlNet's architecture in conjunction with Stable Diffusion.}
+    \caption{A simplified description used in ``Adding Conditional Control to Text-To-Image Diffusion Models''~\cite{zhang2023addingconditionalcontroltexttoimage} to explain ControlNet's architecture in conjunction with Stable Diffusion. On the left side, in gray, we can see (a) Stable Diffusion's U-Net architecture, which parameters are frozen for the training of ControlNet. The (b) ControlNet, in blue, can be seen on the right. Just like Stable Diffusion it receives the prompt $c_t$, the time $t$ and noise $z_t$ as inputs, the only difference being, that it also allows for the task-specific conditions feature vector $c_f$ to be used.}
     \label{fig:control_net:sd_architecture}
 \end{figure}
 ControlNet is applied to each encoder level of the U-Net, as seen in Figure~\ref{fig:control_net:sd_architecture}b. Specifically, ControlNet creates trainable copies of the 12 encoding blocks and 1 middle block from Stable Diffusion. The 12 encoding blocks are distributed across 4 resolutions (64~$\times$~64,~32~$\times$~32,~16~$\times$~16,~8~$\times$~8), with each resolution level replicated three times. The outputs are added to the 12 skip-connections and 1 middle block of the U-Net. Given that Stable Diffusion follows a typical U-Net architecture, this ControlNet configuration can be extended to other models. ControlNet is computationally efficient since the frozen parameters do not require gradient computation during fine-tuning, reducing the load on the locked encoder. This approach accelerates training and conserves GPU memory. Zhang et al.\ report that, on a single NVIDIA A100 PCIE 40GB, optimizing Stable Diffusion with ControlNet uses about 23\% more GPU memory and 34\% more time per training iteration than without ControlNet.
@@ -40,5 +40,15 @@ c_f = E(c_i),
 \]
 where $c_i$ is the input condition, and $c_f$ is passed into the ControlNet.
 
-\section{Training}
-
+\subsubsection{Training}
+In image diffusion models, noise is progressively added to an initial image $z_0$, resulting in a noisy image $z_t$ after $t$ steps. Given conditions such as the timestep $t$, text prompts $c_t$, and a task-specific condition $c_f$, the network $\epsilon_\theta$ learns to predict the noise in $z_t$ using the objective:
+\[
+\mathcal{L} = \mathbb{E}_{z_0, t, c_t, c_f, \epsilon \sim \mathcal{N}(0, 1)} \left[ \| \epsilon - \epsilon_\theta(z_t, t, c_t, c_f) \|_2^2 \right],
+\]
+where $\mathcal{L}$ represents the overall learning objective of the diffusion model, and it is directly employed for fine-tuning with ControlNet. During training, Zhang et al.~\cite{zhang2023addingconditionalcontroltexttoimage} randomly replace 50\% of the text prompts $c_t$ with empty strings, which enhances ControlNet's ability to directly understand semantic information from conditioning images (e.g., edges, poses, depth) as a substitute for text prompts. Because zero convolution layers prevent noise addition, the model consistently predicts high-quality images. Furthermore, Zhang et al.\ observerd that ControlNet suddenly learns to follow the input condition from one optimization step to another, usually within 10.000 steps. They dubbed this the ``sudden convergence phenomenon''. It can be observed in Figure~\ref{fig:control_net:training_steps}, where different optimization steps and their corresponding outputs are shown.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{assets/control_net_training_steps.pdf}
+    \caption{The demonstration of the ``sudden convergence phenomenon'' used by Zhang et al.~\cite{zhang2023addingconditionalcontroltexttoimage}. The model abruptly learns to follow the input condition at a specific step in the training process (in this case step 6133 marked in bold).}
+    \label{fig:control_net:training_steps}
+\end{figure}
