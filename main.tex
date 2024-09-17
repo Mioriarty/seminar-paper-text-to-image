@@ -15,22 +15,22 @@
 \begin{document}
 
 \begin{titlepage}
-	\centering
-	\includegraphics[width=0.2\textwidth]{assets/uni-logo.png}\par\vspace{0.5cm}
-	{\scshape\LARGE Friedrich Schiller University, Jena \par}
-	\vspace{1cm}
-	{\scshape\Large Seminar Paper for Advanced Methods in Computer Vision\par}
-	\vspace{1.5cm}
-	{\huge\bfseries An overview over image generating artificial intelligence (TODO!!!)\par}
-	\vspace{2cm}
-	{\Large\itshape Phillip Rothenbeck, Lean Manthey, and Moritz Seppelt\par}
-	\vfill
-	supervised by\par
-	M.Sc.~Niklas \textsc{Penzel}
+    \centering
+    \includegraphics[width=0.2\textwidth]{assets/uni-logo.png}\par\vspace{0.5cm}
+    {\scshape\LARGE Friedrich Schiller University, Jena \par}
+    \vspace{1cm}
+    {\scshape\Large Seminar Paper for Advanced Methods in Computer Vision\par}
+    \vspace{1.5cm}
+    {\huge\bfseries An overview over image generating artificial intelligence (TODO!!!)\par}
+    \vspace{2cm}
+    {\Large\itshape Phillip Rothenbeck, Lean Manthey, and Moritz Seppelt\par}
+    \vfill
+    supervised by\par
+    M.Sc.~Niklas \textsc{Penzel}
 
-	\vfill
+    \vfill
 
-	{\large \today\par}
+    {\large \today\par}
 \end{titlepage}
 
 \tableofcontents
@@ -41,7 +41,7 @@
 
 \section{Related Work}
 1 - 2 Seiten. Einfach nur related work von Papern abschreiben
-
+\include{wuerstchen/related_work}
 \include{controlnet/related_work}
 
 \section{Background}
@@ -53,39 +53,39 @@ In this chapter, we will provide an overview of the inner working of stable diff
 \begin{enumerate}
     \item The text input is converted to conditioning vectors. This is done using a transformer architecture.
     \item The main step is the iterative denoising. Here the conditioning vectors will influence the resulting latent representation. A neural network called U-net does the heavy lifting.
-    \item Finally, the latent representation must be converted into the final image. For that, an auto-decoder is used. 
+    \item Finally, the latent representation must be converted into the final image. For that, an auto-decoder is used.
 \end{enumerate}
 
 First let's assume, all the machine learning components have already their trained weights and biases. Equipped with these, we will go through step by step how a text-input is turned into an image. Afterwards, the training process will be presented.
 
 \subsubsection{Conditioning}
-For stable diffusion, the conditioning process is just a series of different existing components plugged together with the goal of semantically understanding the input prompt. First the input sentence gets tokenized. They were using the BERT-Tokenizer\cite{devlin2019bert}. Basically, tokenization means cutting the input in small parts, the so-called tokes. These tokes can be thought of as words or part of words. 
+For stable diffusion, the conditioning process is just a series of different existing components plugged together with the goal of semantically understanding the input prompt. First the input sentence gets tokenized. They were using the BERT-Tokenizer\cite{devlin2019bert}. Basically, tokenization means cutting the input in small parts, the so-called tokes. These tokes can be thought of as words or part of words.
 
-Secondly, these tokens get embedded into some Euclidean vector space. Here already some semantic meaning gets encoded. Tokens that have similar meanings will be mapped to vectors that point to approximately the same region in this high-dimensional space. For example the words “achieve” and “accomplish” would be closer than “achieve” and “annoying”. But even more, direction or distances can also be interpretable already. This could be thought of as relations between words. For example, it is expectable that the embedding of “Germany” and “Berlin” have the same distance as “Spain” and “Madrid”. 
+Secondly, these tokens get embedded into some Euclidean vector space. Here already some semantic meaning gets encoded. Tokens that have similar meanings will be mapped to vectors that point to approximately the same region in this high-dimensional space. For example the words “achieve” and “accomplish” would be closer than “achieve” and “annoying”. But even more, direction or distances can also be interpretable already. This could be thought of as relations between words. For example, it is expectable that the embedding of “Germany” and “Berlin” have the same distance as “Spain” and “Madrid”.
 
 This simple representation is not enough to understand the input. The meaning of words drastically change. Quoting the English linguist J. R. Firth \textit{You shall know a word by the company it keeps}\cite{firth1962studiesinlinguisticanalysis}. To capture these important relationships, the creators of Stable diffusion deployed the so-called cross-attention algorithm\cite{vaswani2023attentionneed}. It adjusts the embeddings by selectively attending to other relevant tokens in the sequence, thereby incorporating contextual information. This allows the embeddings to more accurately capture the relationships between words, ensuring that the model's understanding of each token is enriched by its surrounding context.
 
 
 \iffalse
-It operates by computing three different vectors for each token in the input sequence for each type of relationship there could be in the sentence: the Query ($Q$), the Key ($K$), and the Value ($V$) vectors. These vectors are derived from the embedded token vectors through linear transformations, which are essentially matrix multiplications with learned weight matrices. Specifically, for each token, we calculate:
-$$Q = X \cdot W_Q,\quad K = X\cdot W_K,\quad V = X \cdot W_V$$
-Where $X$ is the matrix of embedded token vectors, and $W_Q$, $W_K$ and $W_V$ are learned weight matrices for the Query, Key, and Value, respectively.
+    It operates by computing three different vectors for each token in the input sequence for each type of relationship there could be in the sentence: the Query ($Q$), the Key ($K$), and the Value ($V$) vectors. These vectors are derived from the embedded token vectors through linear transformations, which are essentially matrix multiplications with learned weight matrices. Specifically, for each token, we calculate:
+    $$Q = X \cdot W_Q,\quad K = X\cdot W_K,\quad V = X \cdot W_V$$
+    Where $X$ is the matrix of embedded token vectors, and $W_Q$, $W_K$ and $W_V$ are learned weight matrices for the Query, Key, and Value, respectively.
 
-Once we have the Query ($Q$), Key ($K$), and Value ($V$) vectors for each token, the next step is to determine how much each token should focus on the others. The goal here is to figure out which other words in the sentence are most relevant to the current word, given the context.
-Imagine each Query vector as a question that each word is asking about its context. The Key vectors, on the other hand, represent the possible answers that other words can provide. The dot product between a Query and a Key is like measuring how well the question matches the answer. If the Query and Key vectors are similar, it means that the word being asked about is highly relevant to the current word, and so it should be paid more attention.
-However, to prevent these dot products from getting too large when working with high-dimensional vectors, we scale them down by the square root of the Key vector's dimension, $\sqrt{d_k}$.
+    Once we have the Query ($Q$), Key ($K$), and Value ($V$) vectors for each token, the next step is to determine how much each token should focus on the others. The goal here is to figure out which other words in the sentence are most relevant to the current word, given the context.
+    Imagine each Query vector as a question that each word is asking about its context. The Key vectors, on the other hand, represent the possible answers that other words can provide. The dot product between a Query and a Key is like measuring how well the question matches the answer. If the Query and Key vectors are similar, it means that the word being asked about is highly relevant to the current word, and so it should be paid more attention.
+    However, to prevent these dot products from getting too large when working with high-dimensional vectors, we scale them down by the square root of the Key vector's dimension, $\sqrt{d_k}$.
 
-$$\frac{QK^\top}{\sqrt{d_k}}$$
+    $$\frac{QK^\top}{\sqrt{d_k}}$$
 
-Next, we convert these scaled dot products into attention scores using a softmax function. The softmax function turns these scores into probabilities, where higher scores mean more attention should be given to that token. For example, if "Harry" is the current word, and its Query vector strongly matches the Key vector of "wizard", the attention mechanism will assign a high probability to "wizard", meaning that "Harry" will focus more on "wizard" in this context.
+    Next, we convert these scaled dot products into attention scores using a softmax function. The softmax function turns these scores into probabilities, where higher scores mean more attention should be given to that token. For example, if "Harry" is the current word, and its Query vector strongly matches the Key vector of "wizard", the attention mechanism will assign a high probability to "wizard", meaning that "Harry" will focus more on "wizard" in this context.
 
-$$\mathrm{Attention Weights} = \mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)$$
+    $$\mathrm{Attention Weights} = \mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)$$
 
-Finally, these attention scores are used to compute a weighted sum of the Value vectors. The Value vectors represent the actual information or content associated with each token. The weighted sum allows the model to combine the most relevant pieces of information from the other words, creating a new, context-aware representation of the current word.
+    Finally, these attention scores are used to compute a weighted sum of the Value vectors. The Value vectors represent the actual information or content associated with each token. The weighted sum allows the model to combine the most relevant pieces of information from the other words, creating a new, context-aware representation of the current word.
 
-$$\mathrm{Output} = \sum_i \mathrm{Attention Weights}_i \cdot V_i$$
+    $$\mathrm{Output} = \sum_i \mathrm{Attention Weights}_i \cdot V_i$$
 
-This described process is done using many Key, Query and Value matrices to capture a how range of possible influences words can have on others. The output are context aware token embeddings.
+    This described process is done using many Key, Query and Value matrices to capture a how range of possible influences words can have on others. The output are context aware token embeddings.
 \fi
 
 \subsubsection{Iterative Denoising}
@@ -98,7 +98,7 @@ where $\alpha_t$ controls the step size for noise removal, and $\alpha_t z_t$  (
 \paragraph{U-Net (Add image!!!)}
 One might wander, how do we calculate $\varepsilon_\theta(x_t,t,c)$ and thus approximate the current noise. This is done using a neural network architecture called U-Net\cite{ronneberger2015unetconvolutionalnetworksbiomedical}, that is well-suited for tasks where you need to transform one image into another, as we need it here.
 The U-Net architecture gets its name from its distinctive "U" shape, which reflects the way the network processes information. The U-Net consists of two main parts: the downsampling path  and the upsampling path, connected by a bottleneck in the middle.
-In the downsampling path, the U-Net gradually reduces the image size while capturing important features. Once the image reaches the bottleneck, it has been compressed into a highly abstract representation. This is where the most essential features are concentrated, and it serves as the transition point between the downsampling and upsampling paths. The upsampling path then constructs the resulting image, restoring the original size and adding details. Skip connections between corresponding layers in these paths help preserve fine details by directly passing information from the encoder to the decoder. 
+In the downsampling path, the U-Net gradually reduces the image size while capturing important features. Once the image reaches the bottleneck, it has been compressed into a highly abstract representation. This is where the most essential features are concentrated, and it serves as the transition point between the downsampling and upsampling paths. The upsampling path then constructs the resulting image, restoring the original size and adding details. Skip connections between corresponding layers in these paths help preserve fine details by directly passing information from the encoder to the decoder.
 The resulting is then the approximated noise at this stage of the denoising process, which can be further used, as described above.
 
 \subsubsection{Decoder}
@@ -129,16 +129,17 @@ The core task of the U-Net is to predict the noise that was added to a given noi
 
 The training objective is formulated as a mean squared error (MSE) between the predicted noise and the actual noise. By minimizing this loss, the U-Net learns to accurately estimate the noise at each step, enabling it to reverse the diffusion process during inference, effectively denoising the image and recovering the clean latent representation.
 
+\include{wuerstchen/background}
 \include{controlnet/background}
 
 
 \newpage
 \section{Experiments}
-Here our goal was, to test the reproducibility of the papers, we researched on. As it is computationally not feasible to reproduce every single result, we found one experiment per paper for us to redo. While doing so, we also comment on the quality of the methods and descriptions of the methods used in the papers. 
+Here our goal was, to test the reproducibility of the papers, we researched on. As it is computationally not feasible to reproduce every single result, we found one experiment per paper for us to redo. While doing so, we also comment on the quality of the methods and descriptions of the methods used in the papers.
 
 \subsection{The FID of Stable Diffusion}
 \subsubsection{Selection of the experiment and background}
-Before looking closer into the kinds of experiments that were done by the stable diffusion team, it was clear that we could not reproduce any training related experiments, as these are generally computationally very expensive. The evaluation metrics looked more promising to us, where certain score where compared with then state-of-the-art models. Most notably, the FID-Score was calculated over different datasets. 
+Before looking closer into the kinds of experiments that were done by the stable diffusion team, it was clear that we could not reproduce any training related experiments, as these are generally computationally very expensive. The evaluation metrics looked more promising to us, where certain score where compared with then state-of-the-art models. Most notably, the FID-Score was calculated over different datasets.
 
 The FID (Fréchet Inception Distance)\cite{heusel2018ganstrainedtimescaleupdate} score is a metric used to evaluate the quality of images generated by generative models or text-to-image models. It compares the distribution of generated images with the distribution of real images, providing a measure of how similar the generated images are to the real ones. The FID score calculates the Fréchet distance between two multivariate Gaussian distributions, one representing the features of real images and the other representing the features of generated images. These features are typically extracted using a pre-trained Inception v3 model. If $P_r$ is the distribution of the real images and $P_g$ of the generated images, $\mu_p, \mu_g$ the respective means and $\Sigma_p, \Sigma_g$ the respective covariance matrices, than the FID score can be calculated with:
 $$\mathrm{FID}(P_r, P_g) = \Vert\mu_r - \mu_g\Vert_2^2 + \mathrm{Tr}\left(\Sigma_r + \Sigma_p - 2 (\Sigma_r\Sigma_g)^\frac{1}{2}\right)$$
@@ -155,15 +156,15 @@ In the experiment be proceede as follows. For every image in the dataset, we fet
 \begin{table}
     \centering
     \begin{tabular}{l|c}
-        & \textbf{FID} \\
+                                                                               & \textbf{FID} \\
         \hline
-        \textbf{Original Paper} & $23.31$  \\
-        \textbf{Our result} & $24.56$  \\
-		\hline
-		CogView \cite{ding2021cogviewmasteringtexttoimagegeneration} & $27.10$  \\
-		LAFITE \cite{zhou2022lafitelanguagefreetrainingtexttoimage} & $26.94$  \\
-		GLIDE \cite{rezende2014stochasticbackpropagationapproximateinference} & $12.24$  \\
-		Make-A-Scene \cite{gafni2022makeascenescenebasedtexttoimagegeneration} & $11.84$ 
+        \textbf{Original Paper}                                                & $23.31$      \\
+        \textbf{Our result}                                                    & $24.56$      \\
+        \hline
+        CogView \cite{ding2021cogviewmasteringtexttoimagegeneration}           & $27.10$      \\
+        LAFITE \cite{zhou2022lafitelanguagefreetrainingtexttoimage}            & $26.94$      \\
+        GLIDE \cite{rezende2014stochasticbackpropagationapproximateinference}  & $12.24$      \\
+        Make-A-Scene \cite{gafni2022makeascenescenebasedtexttoimagegeneration} & $11.84$
     \end{tabular}
     \caption{Comparison of FID score of the paper and other models with our results}
     \label{tab:fid_is_comparison}
@@ -171,7 +172,7 @@ In the experiment be proceede as follows. For every image in the dataset, we fet
 
 As it can be seen in Tab. \ref{tab:fid_is_comparison}, the FID score is slightly worse. As error bounds for the FID score had not been provided and also no hypothesis testing was performed, it is tricky to exactly evaluate this outcome. The other image generating model's metrics shown are the same, Stable Diffusion was compared to in the original paper. And at least, we see that Stable Diffusion's ranking didn't change when using our metrics within the provided examples.
 
-Nevertheless, there is a non-neglectable difference between the FID scores. This might have arisen from a variety of reasons: differences in the calculation pipeline, e.g. by a more modern version of \texttt{torch-fidelity} for instance by a newer Inception model, randomness in the generated image data or slightly different preprocessing. 
+Nevertheless, there is a non-neglectable difference between the FID scores. This might have arisen from a variety of reasons: differences in the calculation pipeline, e.g. by a more modern version of \texttt{torch-fidelity} for instance by a newer Inception model, randomness in the generated image data or slightly different preprocessing.
 
 \subsubsection{Stability of the FID score}
 \begin{figure}
@@ -196,27 +197,28 @@ In general, we found the TID score to be very unstable. It can only be compared 
 
 As you can see in fig \ref{fig:num_samples_comparison}, the downwards trend inherits a predictable pattern. By linear regression of the log-log-plot, we were able to match the function
 $$ y(x) = c\cdot \frac{1}{x^p} \qquad\mathrm{with}\quad p = 0.607,\, c = 4208.3$$
-onto our data points. Equipped with this knowledge, we are able to propose a corrected FID score, by multiplying the FID score with the number of samples, the score was calculated with, to the $(-p)$-th power. The results can be viewed in fig. \ref{fig:num_samples_comparison_corrected}. This correction enables us to compare FID scores of different dataset sizes and also yields to the more desirable behavior, that the FID score is just less accurate for lower sample sizes and not straight up greater. 
+onto our data points. Equipped with this knowledge, we are able to propose a corrected FID score, by multiplying the FID score with the number of samples, the score was calculated with, to the $(-p)$-th power. The results can be viewed in fig. \ref{fig:num_samples_comparison_corrected}. This correction enables us to compare FID scores of different dataset sizes and also yields to the more desirable behavior, that the FID score is just less accurate for lower sample sizes and not straight up greater.
 
 There are clear open question, that require more research. $p$ and $c$ might depend on the dataset and/or the image-generating model, rendering the proposed correction useless. On the other hand, if at least $p$ is a global value for the FID score in general, this method makes FID scores of datasets of different sizes comparable. Maybe there is even a the
 
 We were also interested in the FID score when varying the number of diffusion steps. As we didn't have the computation power, to generate 5000 images per number of diffusion steps, we only used a subset of 1780 images of the MS-COCO dataset. We consider the FID calculation with more than 1750 images a sufficiently stable – at least in our case – as from there on the corrected FID is roughly constant (Fig. \ref{fig:num_samples_comparison_corrected}). The results can be seen in \ref{fig:ddms_comparison}.
 \begin{figure}[h]
     \centering
-	\includegraphics[width=0.4\textwidth]{assets/ddms_comparison.pdf}
-	\caption{FID score by number of diffusion step for a subset of MS-COCO of size 1750.}
-	\label{fig:ddms_comparison}
+    \includegraphics[width=0.4\textwidth]{assets/ddms_comparison.pdf}
+    \caption{FID score by number of diffusion step for a subset of MS-COCO of size 1750.}
+    \label{fig:ddms_comparison}
 \end{figure}
 
 As you can see, the FID score already settles at 50 diffusion steps, indicating constant quality from there on out. In fig. \ref{fig:ddms_image_comparison} you can make up your own mind. There we compared the different generated images for different prompts.
 
 \begin{figure}[h!]
     \centering
-	\includegraphics[width=0.85\textwidth]{assets/ddms_image_comparison.pdf}
-	\caption{Generated images with different numbers of diffusion steps. On the right, the reference image from the MS-COCO dataset. The prompts where (1) \textit{A woman standing on skiis while posing for the camera.} (2) \textit{Suitcase sitting on the ground with stickers from various countries on it.} (3) \textit{Black and white photo of a scooter carrying numerous bikes.} (4) \textit{A corner of a kitchen with a big fridge.} (5) \textit{A small elephant walks underneath a big elephant.}} 
-	\label{fig:ddms_image_comparison}
+    \includegraphics[width=0.85\textwidth]{assets/ddms_image_comparison.pdf}
+    \caption{Generated images with different numbers of diffusion steps. On the right, the reference image from the MS-COCO dataset. The prompts where (1) \textit{A woman standing on skiis while posing for the camera.} (2) \textit{Suitcase sitting on the ground with stickers from various countries on it.} (3) \textit{Black and white photo of a scooter carrying numerous bikes.} (4) \textit{A corner of a kitchen with a big fridge.} (5) \textit{A small elephant walks underneath a big elephant.}}
+    \label{fig:ddms_image_comparison}
 \end{figure}
 
+\include{wuerstchen/experiments}
 \include{controlnet/experiments}
 
 \newpage
@@ -227,16 +229,16 @@ The capabilities the mentioned text-to-image models are already extraordinary, b
 \subsection{Application in professional contexts}
 The most self-evident influence might be on those working as professional artists. In 2023 Researchers in Korea conducted a survey on 28 professionals working in a wide variety of domains in the artistic sector, from sculpturing to video editing\cite{ko2023largescaletexttoimagegenartionmodelsforvisualartists}. 12 of them mentioned, that Stable Diffusion and its descendants are useful in generating more reference material, which they mainly use to learn by observing what and how others create and to get inspirations for new ideas. But most of them also stated, that, this wouldn't change their basic work paradigm. Another use case for them was rapid prototyping, in order to enable them to do real-time communication to their clients or artists in different fields. Furthermore, the artists perceived that the models have close to no bias when creating art, which made it possible to quickly create unconventional images but also yields the lack of the ability to personalize the results. They also said that because the generated images are only influenced by the text prompt and text can never fully and accurately describe and image the artist have in mind, using text-to-image technology limits their creativity, and you cannot escape the restriction of the text prompt. Often times, this made it frustrating to use image generating AI in their daily work. Despite their flaws, text-to-image models are an ever-growing technology that support and will support professional artists and numerous ways.
 
-Apart from artists, professionals in other fields are also string to use Stable Diffusion-like AI. Nowadays, it is easier than ever to create good to great images that you have in mind. The trend can be labeled as the "Democratization of Art". A Finish study on game industry professionals\cite{vimpari2023texttoimagegenerationaibygameprofessionals} titled "An Adapt-or-die Type of Situation" explores all kinds of different ways, this new technology impacts the industry. A lot of the participants were experiencing fundamental transformation of their role. Already a third of them were using it daily, another third weekly. Many of the participants, where similarly to the Korean artists using the AI mostly for prototyping and ideation. Also in architecture\cite{sekban2022artandarchtitecture} text-to-image models can be used to generate design alternatives, for instance making a design more energy efficient or sustainable. The education sector has also proven to be an area, where image generating AI can be applied\cite{vartiainen2023aiincraftseducation}. Here it is again used for ideation but also as way for children externalize their ideas and conceptions. Although it was also highlighted that using text-to-image models in the classroom yield multiple challenges, for instance the question on what to assess when marking a student's work, as a lot might have been done by the AI. Even in tourism, applications are possible. By a Chinese study\cite{miao2023aiintourism}, those AI tools have the chance improve the anticipation, on-site and recollection experience of tourists. 
+Apart from artists, professionals in other fields are also string to use Stable Diffusion-like AI. Nowadays, it is easier than ever to create good to great images that you have in mind. The trend can be labeled as the "Democratization of Art". A Finish study on game industry professionals\cite{vimpari2023texttoimagegenerationaibygameprofessionals} titled "An Adapt-or-die Type of Situation" explores all kinds of different ways, this new technology impacts the industry. A lot of the participants were experiencing fundamental transformation of their role. Already a third of them were using it daily, another third weekly. Many of the participants, where similarly to the Korean artists using the AI mostly for prototyping and ideation. Also in architecture\cite{sekban2022artandarchtitecture} text-to-image models can be used to generate design alternatives, for instance making a design more energy efficient or sustainable. The education sector has also proven to be an area, where image generating AI can be applied\cite{vartiainen2023aiincraftseducation}. Here it is again used for ideation but also as way for children externalize their ideas and conceptions. Although it was also highlighted that using text-to-image models in the classroom yield multiple challenges, for instance the question on what to assess when marking a student's work, as a lot might have been done by the AI. Even in tourism, applications are possible. By a Chinese study\cite{miao2023aiintourism}, those AI tools have the chance improve the anticipation, on-site and recollection experience of tourists.
 
 What I have presented is just the peak of many professional applications of Stable Diffusion and its decedents and I did not yet start with the private use cases. In general, we were able to make out, three major applications: final image creation, ideation and prototyping.
 
 \subsection{Risks and Concerns}
-Despite all those great opportunities and application, it is irrefutable that there are risks and negative impacts of the boom of this technology. 
+Despite all those great opportunities and application, it is irrefutable that there are risks and negative impacts of the boom of this technology.
 
-As it is easier than ever to create convincing images, deepfakes become a big problem. At 22nd March 2023, a twitter post went viral claiming there has been an explosion at new Pentagon in Washington DC. The post included an AI generated image. The fake news was allegedly spread by among others by the Russian broadcast "Russia Today"\cite{correctiv2023pentagonexplosion} post like these are becoming more realistic and easier to produce. S. Neupane and other researcher from Mississippi State University\cite{neupane2023impactsriskgenerativeai} classify misinformation as one of the five main new attack vectors leveraging artificial intelligence. 
+As it is easier than ever to create convincing images, deepfakes become a big problem. At 22nd March 2023, a twitter post went viral claiming there has been an explosion at new Pentagon in Washington DC. The post included an AI generated image. The fake news was allegedly spread by among others by the Russian broadcast "Russia Today"\cite{correctiv2023pentagonexplosion} post like these are becoming more realistic and easier to produce. S. Neupane and other researcher from Mississippi State University\cite{neupane2023impactsriskgenerativeai} classify misinformation as one of the five main new attack vectors leveraging artificial intelligence.
 
-A serous concern relates to biases, those models impose and the generated images. Generally speaking, image generating models can only reproduce, what they have seen in training. This means that underrepresented data, will also be reproduced rarely. This can have serious impacts. A study by Microsoft\cite{naik2023socialbiasesthroughtexttoimage} showed that 70\% of the generated persons by Stable Diffusion were white. Also, woman are either largely underrepresented or overrepresented, most likely in order of circumvent this problem. One other notable finding was that when generating images to the prompt  "Office in Ethiopia", DALL-E and Stable Diffusion both depict Ethiopia as being in a state of poor economic conditions, while when actually looking for real images, they are closer to offices you might see in western countries. 
+A serous concern relates to biases, those models impose and the generated images. Generally speaking, image generating models can only reproduce, what they have seen in training. This means that underrepresented data, will also be reproduced rarely. This can have serious impacts. A study by Microsoft\cite{naik2023socialbiasesthroughtexttoimage} showed that 70\% of the generated persons by Stable Diffusion were white. Also, woman are either largely underrepresented or overrepresented, most likely in order of circumvent this problem. One other notable finding was that when generating images to the prompt  "Office in Ethiopia", DALL-E and Stable Diffusion both depict Ethiopia as being in a state of poor economic conditions, while when actually looking for real images, they are closer to offices you might see in western countries.
 
 Further consequences of the underrepresentation of the Global South are usability issues. In a cooperation of computer scientists from US, Canada and Bangladesh\cite{mim2024impactoftexttoimagetoolsinglobalsouth}, a survey of Bangladeshi image practitioners was conducted. It was found that Bangladeshi had problems creating the text prompts. Citing one of their participants \textit{"Text-based prompts need proficiency in English nouns and adjectives to explain the idea of an image to the GAI [Generative AI] system to receive an outcome that matches the image practitioner's imagination."} Another participant complained, that specific Bangla words, do not have accurate English translation, in this case she wanted to describe a certain type of rain. Furthermore, often times the participants are poorly educated, such that, even if text-prompts were possible in their mother tong, they wouldn't be able to accurately articulate their perception of the image. Even worse, most of the participants rely on the usage of the free image generating technology, as traditional, more professional applications like \textit{Adobe Photoshop} or \textit{Adobe Illustrator} or financially not feasible. Also in this study impacts of the underrepresentation of data from the global south were found. They asked Midjourney, to depict a future version of Gawsia market, which resulted in an image, where neither the architectural characteristics nor the physical appearances of the people match those typically whitnisable in Dhaka.
 
