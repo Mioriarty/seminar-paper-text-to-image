@@ -1,1 +1,42 @@
 \subsection{W\"urstchen}
+In Section~\ref{heading:subsection:stable_diffusion} we describe the approach
+of a \emph{Latent Diffusion Model} (LDM) which was introduced,
+by Rombach et al.~\cite{rombach2022stablediffusion} in 2022. The LDM methods
+generates images by first encoding the semantics of a prompt into a token and
+introduces this information into a noisy latent image by denoising
+it based on the token. Lastly the latent representation is decoded into the
+pixel space. By mostly navigating in low dimensional latent spaces and
+utilizing the U-Net to slowly induce semantics into the representation, this
+approach is able to yield high resolution images~\cite{rombach2022stablediffusion}.
+This improvement in image quality has a disadvantage: the time the models take
+to train. For example an important model is Stable Diffusion (SD), the version
+1.4 takes 150,000 GPU hours~\cite{rombach2022sd_1_4} while version 2.1 which
+grants an upgrade in image quality has a further increased training time of
+200,000 GPU hours~\cite{rombach2023sd_2_1}. A high image resolution comes with
+an increased image complexity leading to a higher data-intensive training and
+high computational costs. Thus, Pernias et al.~\cite{pernias2024wrstchen}
+introduce \emph{W\"urstchen}. An approach that tries to lower the training time
+and computational cost, by splitting the training process into three parts and
+mostly computing in small latent spaces.\\
+
+This section aims to describe the methods used by W\"urstchen based on the work
+of Pernias et al.~\cite{pernias2024wrstchen}. First we describe the VQGAN by
+Esser et al.~\cite{esser2021tamingtransformershighresolutionimage} as this is
+the foundation of W\"urstchen. Then, we continue to describe the general
+architecture and the detailed training process of the model. Finally we shed
+light onto the image generation process of W\"urstchen.
+
+\subsubsection{VQGAN}
+
+\subsubsection{Architecture}
+% introduce training time and cost reduction through calculation in lower dimensions and split in architecture
+
+\subsubsection{Training}
+
+\paragraph*{Stage A}
+
+\paragraph*{Stage B}
+
+\paragraph*{Stage C}
+
+\subsubsection{Image Generation}
