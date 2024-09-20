@@ -23,13 +23,18 @@ This section aims to describe the methods used by W\"urstchen based on the work
 of Pernias et al.~\cite{pernias2024wrstchen}. First we describe the VQGAN by
 Esser et al.~\cite{esser2021tamingtransformershighresolutionimage} as this is
 the foundation of W\"urstchen. Then, we continue to describe the general
-architecture and the detailed training process of the model. Finally we shed
+architecture and the detailed training process of the model. Finally, we shed
 light onto the image generation process of W\"urstchen.
 
 \subsubsection{VQGAN}
+% combines the exploitation of knowledge of local features of CNNs and the strength of transformer models to model long-range relations
+% model learns a codebook of "context-rich visual parts" using CNNs and 
 
 \subsubsection{Architecture}
 % introduce training time and cost reduction through calculation in lower dimensions and split in architecture
+% first model encodes prompt into a latent representation of a very low compression 42:1
+% second model uses this latent representation to navigate in a less compressed latent space with compression ratio of 4:1
+% last model is the decoder branch of an VQGAN that translates the latent representation into the pixel space
 
 \subsubsection{Training}
 
