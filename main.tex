@@ -120,6 +120,7 @@ Throughout this process, the decoder leverages the rich information captured dur
 
 
 \subsubsection{Training}
+\label{sec:stabel_diffusion:training}
 In the previous sections, we explored a variety of machine learning components that are integral to achieving the text-to-image generation capability of models like Stable Diffusion. Specifically, these components include the tokenizer, embeddings, transformer (comprising value, query, and key matrices), the U-Net, and the decoder. Among these, pretrained weights are often utilized for the tokenizer, word embeddings, and transformer. However, the U-Net, which predicts the noise in the denoising process, and the decoder, responsible for converting the latent representation into the final image, typically require dedicated training. In this chapter, I will focus on the structure of the training data and the loss functions employed in training these components. While the detailed optimization algorithms and mathematical derivations are beyond the scope of this discussion, a comprehensive understanding begins with the decoder and works backward through the model pipeline.
 
 \paragraph{Training the Decoder}
