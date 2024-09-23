@@ -121,27 +121,52 @@ During training the encoder, the decoder and the codebook are defined. The
 codebook defines the latent space with the compression ratio of 4:1, which is
 the codomain of Stage B.
 
-\paragraph*{Stage B}
-% drops the quantization of Stage A and takes encoder of stage A
-% noised encodings are given to the model as an input
-% conditioned on the text-conditioning and embeddings from a semantic compressor is supposed to be interface for stage C
+\paragraph*{Stage B} This stage reconstructs the latent space defined by the
+VQGAN in the training process of Stage A. Therefore, the encoder $f_{\Theta}$
+without the quantization from the preceding stage is used to compress the image.
+After noising, the representation $\tilde{\boldsymbol{X}}_t\in\mathbb{R}^{4\times1256\times256}$ and given to the model $f_\vartheta$. For
+conditioning Stage B uses both the text embeddings and the results of a
+\emph{semantic compressor} $e_{\Phi}$. This semantic compressor mimics Stage C and will be
+the foundation of its training process.\\
 
-% semantic compressor can be any feature extractor, but should have a good feature representation, small for fast training
-% Feature space must be large enough to be detailed enough and small enough to not have a high impact on computation time
-% choose CNN ImageNet1k pre-trained EfficientV2 (S) for semantic compressor
-% gets a bicubic interpolated version of the image and produces a highly compressed version -> 1x1 conv to reduce depth and further compress
+The semantic compressor is a feature extractor of any kind that is supposed to
+compress an image to a high degree. The authors advise to choose a model with a
+good feature representation and small size in order to fasten the training
+precess of both Stages B and C. Additionally, they mention the size of the
+feature space, as too few dimensions would lead to a loss of detail, while to
+many dimensions can have a great impact on the computation costs and time. For
+these reasons, Pernias et al. chose the CNN ImageNet1k pre-trained EfficientV2 (S)~\cite{Tan2021EfficientNetV2}.
+The semantic compressor gets a bicubic interpolated version of the image and
+produces its highly compressed version. Afterward, a $1\times1$ convolution is
+applied to reduce the depth and further compress the latent representation in $\mathbb{R}^{16\times24\times24}$. \\
 
-% the conditioning is implemented using Cross Attention (cite)
-% add noise to the embeddings of the semantic compressor and randomly drop it to be able to sample with classifier-free-guidance
-% from input and conditioning f_theta reconstructs lr and a typical diffusion process is started 
-% the latent space of semantic compressor is supposed to be reconstructed by stage C
+The embeddings $\mathcal{C}_{\text{SC}}$ of the semantic compressor and the
+text-conditioning $\mathcal{C}_{\text{text}}$ are both implemented using Cross-Attention~\cite{vaswani2023attentionneed}.
+Pernias et al. add noise to $\mathcal{C}_{\text{SC}}$ and randomly drop it to
+sample with classifier-free-guidance~\cite{ho2022classifierfreediffusionguidance}.
+Using both the noised latent representation of the encoder $f_\Theta$ and the
+conditioning the model $f_\vartheta$ trains with the standard diffusion
+procedure as we discuss in Section~\ref{sec:stabel_diffusion:training}.
 
-\paragraph*{Stage C}
-% is supposed to reconstruct stage B embeddings of semantic constructor
-% semantic compressor images are noised using formula
-% diffusion process is used but objective is redefined -> model predicts noise (maybe show formulas)
-% text conditioning embeddings are produced utilizing CLIP-H (cite) + is dropped 5% of the times
-% conditioning is applied after each block using Cross-Attention
+\paragraph*{Stage C} The last stage, is supposed to reconstruct the latent space
+defined by the semantic compressor $e_\Phi$. Thus, the embeddings
+$\mathcal{C}_{\text{SC}}$ are generated as explained for Stage B. To the latent
+representation $\boldsymbol{X}_{\text{SC}} = \mathcal{C}_{\text{SC}}$, a weighted noise $\epsilon$
+is added,
+\begin{equation}
+    \boldsymbol{X}_{\text{SC}, t} = \sqrt{\bar{\alpha}_t}\cdot\boldsymbol{X}_{\text{SC}}+\sqrt{1-\bar{\alpha}_t}\cdot\epsilon,
+\end{equation}
+with $\bar{\alpha}_t$ defined by a cosine schedule~\cite{Nichol2021ImprovedDenoisingDiffusionProbabilisticModels}.
+The model takes $\boldsymbol{X}_{\text{SC}, t}$, $\mathcal{C}_{\text{text}}$ and
+the time step $t$ as an input and predicts the error,
+\begin{equation}
+    \bar{\epsilon} = \frac{\boldsymbol{X}_{\text{SC}, t} - \boldsymbol{A}}{|1-\boldsymbol{B}| + 1e^{-5}} \quad \text{with} \quad \boldsymbol{A}, \boldsymbol{B} = f_\Theta(\boldsymbol{X}_{\text{SC}, t},\mathcal{C}_{\text{text}}, t).
+\end{equation}
+As the authors mention, they found this change of objective to yield a more
+stable training process. The text-embeddings are produced using
+CLIP-H~\cite{Ilharco2021OpenCLIP} and are dropped 5\% of the times. In the same
+way as the Stage B model, the model $f_\Theta$ is trained using the diffusion
+procedure, while conditioning is applied after each block using cross-attention.
 
 \subsubsection{Image Generation}
-% ?
+
