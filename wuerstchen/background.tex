@@ -1,42 +1,44 @@
 \subsection{W\"urstchen}
-In Section~\ref{heading:subsection:stable_diffusion} we describe the approach
+In Section~\ref{heading:subsection:stable_diffusion}, we describe the approach
 of a \emph{Latent Diffusion Model} (LDM) which was introduced,
 by Rombach et al.~\cite{rombach2022stablediffusion} in 2022. The LDM methods
-generates images by first encoding the semantics of a prompt into a token and
-introduces this information into a noisy latent image by denoising
-it based on the token. Lastly the latent representation is decoded into the
+generate images by denoising a noisy latent image gradually step by step. To
+conduct the reduction of noise and the introduction of semantics, the LDM takes
+in an encoding of a text-prompt called token, or embedding and utilizing it for
+each diffusion step. Lastly the latent representation is decoded into the
 pixel space. By mostly navigating in low dimensional latent spaces and
 utilizing the U-Net to slowly induce semantics into the representation, this
 approach is able to yield high resolution images~\cite{rombach2022stablediffusion}.
 This improvement in image quality has a disadvantage: the time the models take
-to train. For example an important model is Stable Diffusion (SD), the version
+to train. For example, an important model is Stable Diffusion (SD), the version
 1.4 takes 150,000 GPU hours~\cite{rombach2022sd_1_4} while version 2.1 which
 grants an upgrade in image quality has a further increased training time of
 200,000 GPU hours~\cite{rombach2023sd_2_1}. A high image resolution comes with
-an increased image complexity leading to a higher data-intensive training and
+an increased image complexity leading to a more data-intensive training and
 high computational costs. Thus, Pernias et al.~\cite{pernias2024wrstchen}
-introduce \emph{W\"urstchen}. An approach that tries to lower the training time
-and computational cost, by splitting the training process into three parts and
-mostly computing in small latent spaces.\\
+introduce \emph{W\"urstchen}. An approach that tries to decrease the training
+time and computational cost, by splitting the training process into three parts
+and mostly computing in small latent spaces.\\
 
 This section aims to describe the methods used by W\"urstchen based on the work
 of Pernias et al.~\cite{pernias2024wrstchen}. First we describe the VQGAN by
 Esser et al.~\cite{esser2021tamingtransformershighresolutionimage} as this is
-the foundation of W\"urstchen. Then, we continue to describe the general
-architecture and the detailed training process of the model. Finally, we shed
-light onto the image generation process of W\"urstchen.
+the model that is the foundation for Stage A of W\"urstchen. Then, we continue
+to shed light onto the general structure and the image generation process. Finally, we
+describe the training processes of each W\"urstchen stage as Pernias et al.
+provide them.
 
 \subsubsection{VQGAN}
 \label{sec:wuerstchen:VQGAN}
-The \emph{Vector Quantized Generative Adversarial Network} (VQGAN) was introduced by
-Esser et al~\cite{esser2021tamingtransformershighresolutionimage} in 2021 and
-builds on the \emph{Vector Quantized Variational Autoencoder}
+The \emph{Vector Quantized Generative Adversarial Network} (VQGAN) was
+introduced by Esser et al.~\cite{esser2021tamingtransformershighresolutionimage}
+in 2021 and builds on the \emph{Vector Quantized Variational Autoencoder}
 model~\cite{vdOord2017NeuralDiscreteRepresentationLearning}. The VQGAN combines
 the strength of \emph{Convolutional Neural Networks} (CNN) to exploit knowledge
 of local features and the strength of autoregressive transformer architectures
-to model long-range relations. As Esser et al. introduce the VQGAN uses several
-CNNs during training. The first CNN is called the Encoder which is able to
-compress a picture $x$ into the compressed version $\hat{z}$. Afterward,
+to model long-range relations in generated images. Esser et al. introduce
+several CNNs to the VQGAN for the training procedure. First, the Encoder CNN
+compresses an image $x$ into the compressed version $\hat{z}$. Afterward,
 the VQGAN utilizes the quantization $\boldsymbol{q}[\cdot]$ using a
 perceptually rich and discrete codebook $\mathcal{Z}$ to create the quantized
 latent representation,
@@ -46,13 +48,13 @@ latent representation,
 by replacing the spatial representation $\hat{z}_{ij}$ with the closest
 codebook entry $z_{\boldsymbol{k}}$. The latent representation
 $z_{\boldsymbol{q}}$ is a sequence of the entries of the codebook $\mathcal{Z}$.
-Finally, the Decoder CNN reconstructs the image $x$ using the quantized latent
-representation $z_{\boldsymbol{q}}$. To create a rich codebook a patch-based
-discriminator CNN is introduced to find the differences between the real and
-reconstructed images. An autoregressive transformer model then makes use of the
-codebook to generate high-resolution synthetic images.
+Then, the Decoder CNN reconstructs the image $x$ using the quantized latent
+representation $z_{\boldsymbol{q}}$. Finally, in order to create a rich codebook
+a patch-based discriminator CNN is introduced to find the differences between
+the real and reconstructed images. An autoregressive transformer model then
+makes use of the codebook to generate high-resolution synthetic images.
 
-\subsubsection{Architecture and Structure}
+\subsubsection{W\"urstchen Structure and Image Generation}
 \begin{figure}[t]
     \includegraphics[width=\textwidth]{assets/wuerstchen_arch.pdf}
     \caption{Visualization of the W\"urstchen architecture, introduced by
@@ -66,20 +68,38 @@ codebook to generate high-resolution synthetic images.
 In 2024, Pernias et al.~\cite{pernias2024wrstchen} introduce \emph{W\"urstchen}.
 With this method they set out to decrease the computation cost and training
 time of image generation models which are based on latent diffusion~\cite{rombach2022stablediffusion}.
-W\"urstchen is build up from three stages. The first stage, Stage C, comprises
-a text-conditional diffusion model $f_\Theta$ that operates on a
-low-dimensional latent space with a compression ratio of 42:1. Due to this,
-$f_\Theta$ does not perform any downsampling as the authors decided that the
-typical U-Net structure would do harm to the image quality. The next stage,
-Stage B, a diffusion model $f_\vartheta$, utilizing the U-Net architecture and
-conditioned on both the text-prompt and the embeddings $\mathcal{C}_{\text{SC}}$
-of the low-dimensional latent representation generates a higher dimensional
-latent representation with a compression ratio of 4:1. This latent space is
-generated by a VQGAN during training. Stage A of W\"urstchen consists of the decoder $f_\Theta^{-1}$
-of this VQGAN which reconstructs the image from the latent representation
-generated in Stage B.
+Figure~\ref{fig:wuerstchen:arch} illustrates the structure of W\"urstchen which
+is build up from three stages. The first stage, Stage C, comprises a
+text-conditional diffusion model $f_\Theta$ that operates on a low-dimensional
+latent space with a compression ratio of 42:1. This stage starts the image
+generation pipeline by taking latent random noise
+$\boldsymbol{X}_{\text{SC}, \tau_C} = \mathcal{N}(0, \boldsymbol{\text{I}})$ and
+uses the DDPM algorithm by Ho et al.~\cite{DBLP:conf/nips/HoJA20} to iteratively
+sample the Semantic Compressor (see Section~\ref{sec:wuerstchen:training})
+latent representations on text-conditioning to generate the latent representation
+$\bar{\boldsymbol{X}}_{\text{SC}}\in\mathbb{R}^{16\times24\times24}$. Because of
+the low dimensionality of the latent space, $f_\Theta$ does not utilize the
+typical U-Net structure as the authors decided that any downsampling would do
+harm to the image quality. The next stage, Stage B, employs a diffusion model
+$f_\vartheta$, utilizing the U-Net architecture. It is conditioned on both the
+text-prompt and the embeddings $\mathcal{C}_{\text{SC}}$ of the flattened
+$\bar{\boldsymbol{X}}_{\text{SC}}$ from Stage C. This model generates a
+higher-dimensional latent representation
+$\tilde{\boldsymbol{X}}\in\mathbb{R}^{4\times256\times256}$ by again employing
+the DDPM algorithm. The latent space in which $\tilde{\boldsymbol{X}}$ lives,
+has a compression ratio of 4:1 and is created during the training process by a
+VQGAN. Stage A of W\"urstchen consists of the decoder $f_\Theta^{-1}$ which is
+part of the same  VQGAN. The decoder translates the latent representation
+$\tilde{\boldsymbol{X}}$ to the final image,
+\begin{equation}
+    \bar{\boldsymbol{X}} = f_\Theta^{-1}(\tilde{\boldsymbol{X}}),
+\end{equation}
+which lives in the pixel space with $\bar{\boldsymbol{X}}\in\mathbb{R}^{3\times1024\times1024}$.
+Pernias et al. train each of these stages separately, which we describe in the
+following section.
 
 \subsubsection{Training}
+\label{sec:wuerstchen:training}
 The preceding section provides an overview of the architecture and structure
 of W\"urstchen.
 In order to train the model in a more efficient manner, Pernias et
@@ -167,6 +187,3 @@ stable training process. The text-embeddings are produced using
 CLIP-H~\cite{Ilharco2021OpenCLIP} and are dropped 5\% of the times. In the same
 way as the Stage B model, the model $f_\Theta$ is trained using the diffusion
 procedure, while conditioning is applied after each block using cross-attention.
-
-\subsubsection{Image Generation}
-
