@@ -43,8 +43,7 @@
 \tableofcontents
 \newpage
 
-\section{Introduction}
-1 Seite
+\include{introduction}
 
 \section{Related Work}
 Before Stable Diffusion, generative models for image synthesis faced several challenges due to the high dimensionality of image data. Generative Adversarial Networks (GANs) \cite{goodfellow2014GAN} produced high-resolution images with strong perceptual quality \cite{bigganbrock, DBLP:journals/corr/abs-1912-04958} but were difficult to optimize and struggled to fully capture data distributions \cite{arjovsky2017wasserstein, gulrajani2017improved, DBLP:journals/corr/abs-1801-04406}. Likelihood-based methods like Variational Autoencoders (VAEs) \cite{VAE} and flow-based models \cite{dinh2015nice, DBLP:conf/iclr/DinhSB17} improved density estimation and allowed efficient high-resolution synthesis \cite{DBLP:journals/corr/abs-2011-10650, glow, DBLP:conf/nips/VahdatK20}, but their sample quality lagged behind GANs. Autoregressive models (ARMs) \cite{DBLP:conf/icml/ChenRC0JLS20, DBLP:journals/corr/abs-1904-10509, NIPS2016_b1301141, DBLP:journals/corr/OordKK16}, while excelling in density estimation, were limited to low-resolution images due to computational complexity and sequential sampling requirements.
