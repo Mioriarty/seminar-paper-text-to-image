@@ -6,20 +6,21 @@ Translation''. The sketches are generated via HED~\cite{xie2015holisticallyneste
 
 For this study, we sampled 20 unseen sketches and used them to generate images with PITI, ControlNet and ControlNet + prompt. We recruited 17 users to rank each generated image based on two criteria: “the quality of displayed images” and “the fidelity to the sketch,” following a protocol similar to the original study. Participants ranked each of the 60 images on a scale from 1 to 5, where lower scores indicate worse performance, resulting in 60 rankings for each criterion (quality and fidelity) per participant. In the experiment we show the users two images at a time, the sketch and a generated image using the sketch. The order of all pairs is randomized, because users need a few pairs to establish their own baseline. By randomizing the order, we aim to counter the effects of this baseline establishment and other biases. To quantify user preferences, we computed the Average Human Ranking (AHR) for both metrics, which served as a comparative measure of how well each model adhered to the sketches and the overall image quality.
 \begin{table}[hbp]
-    \centering
-    \def\arraystretch{1.1}
-    \begin{tabular}{lcc}
-        \toprule
-        \textbf{Method}     & \textbf{Result Quality} & \textbf{Condition Fidelity}  \\
-        \midrule
-        PITI~\cite{wang2022pretrainingneedimagetoimagetranslation} (sketch)            & $2.56 \pm 1.20$         & $3.61 \pm 1.13$ \\
-        ControlNet          & $3.00 \pm 1.16$         & $3.04 \pm 1.23$ \\
-        ControlNet (prompt) & $3.19 \pm 1.20$         & $3.07 \pm 1.22$ \\
-        \bottomrule
-    \end{tabular}
-    \caption{Average User Ranking (AUR) of result quality and
-    condition fidelity. The results were calculated by obtaining a user preference ranking (1 to 5 indicates worst to best) of PITI, ControlNet and ControlNet with a simple prompt.}
-    \label{tab:controlnet:experiment}
+    \begin{center}
+        \caption{Average User Ranking (AUR) of result quality and
+        condition fidelity. The results were calculated by obtaining a user preference ranking (1 to 5 indicates worst to best) for the generated images of PITI, ControlNet and ControlNet with a simple prompt.}
+        \label{tab:controlnet:experiment}
+        \def\arraystretch{1.1}
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Method}     & \textbf{Result Quality} & \textbf{Condition Fidelity}  \\
+            \midrule
+            PITI~\cite{wang2022pretrainingneedimagetoimagetranslation} (sketch)            & $2.56 \pm 1.20$         & $3.61 \pm 1.13$ \\
+            ControlNet          & $3.00 \pm 1.16$         & $3.04 \pm 1.23$ \\
+            ControlNet (prompt) & $3.19 \pm 1.20$         & $3.07 \pm 1.22$ \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
 \end{table}
 
 % Category: control
