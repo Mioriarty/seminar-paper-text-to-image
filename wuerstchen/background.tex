@@ -74,7 +74,7 @@ text-conditional diffusion model $f_\Theta$ that operates on a low-dimensional
 latent space with a compression ratio of 42:1. This stage starts the image
 generation pipeline by taking latent random noise
 $\boldsymbol{X}_{\text{SC}, \tau_C} = \mathcal{N}(0, \boldsymbol{\text{I}})$ and
-uses the DDPM algorithm by Ho et al.~\cite{DBLP:conf/nips/HoJA20} to iteratively
+uses the DDPM algorithm by Ho et al.~\cite{ho2020denoisingdiffusionprobabilisticmodels} to iteratively
 sample the Semantic Compressor (see Section~\ref{sec:wuerstchen:training})
 latent representations on text-conditioning to generate the latent representation
 $\bar{\boldsymbol{X}}_{\text{SC}}\in\mathbb{R}^{16\times24\times24}$. Because of
