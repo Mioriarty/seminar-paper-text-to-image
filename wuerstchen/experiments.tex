@@ -1,4 +1,24 @@
 \subsection{PickScore for W\"urstchen}
+In their experiments, Pernias et al.~\cite{pernias2024wrstchen} are able to show
+that their method yields a significant upgrade in computational costs and in
+training time, which sits at a $8\times$ reduction compared to Stable Diffusion
+2.1~\cite{rombach2023sd_2_1}. Another goal of the paper is to keep the level of
+image complexity. In order to compare the level of complexity to other models,
+Pernias et al. picked several evaluation methods. They used the metrics
+Fr\'echet Inception Distance~\cite{heusel2018ganstrainedtimescaleupdate} (see
+Section~\ref{sec:experiments:stabel_diffusion:selction_of_fid}), the Inception
+Score~\cite{NIPS2016_8a3363ab}, and the human preference imitating
+PickScore. Furthermore, they conducted a study with human participants. All were
+given a text-prompt and the images of W\"urstchen and another model to compare.
+In experiments Pernias et al. found that W\"urstchen is capable to keep up or
+even succeed over models of the same dimensions. While working with W\"urstchen
+we found to W\"urstchen to perform worse than presented by the authors. Thus, we
+conduct experiments of the PickScore~\cite{DBLP:journals/corr/abs-2305-01569} to
+prove the correctness of our own suspicion. In this section, we first describe
+the workingw of PickScore, then we present the setup of our experiments and
+after demonstrating our results we provide a discussion.
+
 \subsubsection{PickScore}
+%
 \subsubsection{Experiment description}
 \subsubsection{Results}
