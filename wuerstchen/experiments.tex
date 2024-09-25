@@ -13,12 +13,51 @@ given a text-prompt and the images of W\"urstchen and another model to compare.
 In experiments Pernias et al. found that W\"urstchen is capable to keep up or
 even succeed over models of the same dimensions. While working with W\"urstchen
 we found to W\"urstchen to perform worse than presented by the authors. Thus, we
-conduct experiments of the PickScore~\cite{Kirstain2023PickaPicAO} to
+conduct experiments of the PickScore~\cite{kirstain2023pickapic} to
 prove the correctness of our own suspicion. In this section, we first describe
 the workingw of PickScore, then we present the setup of our experiments and
 after demonstrating our results we provide a discussion.
 
-\subsubsection{PickScore}
-%
+\subsubsection{Pick-a-Pic and PickScore}
+In order to imitate a human user, in the last years language models were trained
+to model the behavior of a user. For text-to-image models Kirstain et
+al.~\cite{kirstain2023pickapic} saw a gap for datasets and models that
+indicate human preference. Thus, Kirstain et al. introduce the dataset
+Pick-a-Pic which consists of data point that each have a prompt two images, that
+were generated using the prompt and the respective user preference. For
+collecting the data the authors constructed the Pick-a-Pic Web App that enables
+its users to enter text-prompts. From these prompts, different model such as
+Stable Diffusion 2.1~\cite{rombach2023sd_2_1}, Dreamlike Photoreal 2.0 and
+Stable Diffusion XL~\cite{podell2024sdxl}. Two of these images are then
+presented, and the user decides which image fits better to the prompt. The
+not-preferred image is then replaced by a new image and so on.
+% Pick A Pic
+% selections are made by intrinsically motivated users instead of paid annotators
+% the authors of the paper suggest to eval models with Pick A Pic, as "which better represent what humans want to generate than mundane captions"
+
+% Pick Score
+% having established a dataset of images that are annotated by human preference -> model that predicts this
+% based on CLIP architecture -> encodes image and text using transformer to a d-dimensional vector returning their inner product s(x, y)
+% two images are compared by taking the scoring function of two images and their prompt another input is the preference distribution vector p
+% the predicted preference hat p is calculated through a softmax-normalization of the scores of the two images
+% the model is trained by minimizing the KL-divergence between the preferences.
+% training objective is analogous to InstructGPT reward model objective
+% pickscore is able to outperform other competitors and human experts
+
 \subsubsection{Experiment description}
+50 images from Pick a pic dataset validation
 \subsubsection{Results}
+\begin{table}[t]
+    \caption{Examples of generated images, showing the ground truth, the HED image that was used as the input condition, PITI's result, ControlNet's result and lastly, ControlNet's result when using the prompt ``realistic, hd, photo''.}
+    \label{tab:wuerstchen:results}
+    \centering
+    \begin{tabular}{cccccccc}
+        \toprule
+        \multicolumn{2}{c}{\textbf{MSCOCO Localized Narratives}} & \phantom{0} & \multicolumn{2}{c}{\textbf{PartiPrompt}} & \phantom{0} & \multicolumn{2}{c}{\textbf{Pick-A-Pic}}                                 \\
+        \cmidrule{1-2}\cmidrule{4-5}\cmidrule{7-8}
+        SD 1.4                                                   & SD 2.1      & \phantom{0}                              & SD 1.4      & SD 2.1                                  & \phantom{0} & SD 1.4 & SD 2.1 \\
+        \midrule
+                                                                 &             & \phantom{0}                              &             &                                         & \phantom{0} &        &        \\
+        \bottomrule
+    \end{tabular}
+\end{table}
