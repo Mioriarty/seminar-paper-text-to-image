@@ -167,21 +167,22 @@ As the text-to-image capabilities of Stable Diffusion were the main focus for us
 In the experiment be proceede as follows. For every image in the dataset, we fetch its caption and let Stable Diffusion generate the image using the caption. This way we reproduce the images in the MS-COCO validation dataset. Afterwards we need to scale the images, such that they all have the same dimensions. We chose a dimension of $299\times299$. Finally, we run \texttt{torch-fidelity}\cite{obukhov2020torchfidelity} by PyTorch. This process is repeated for the different diffusion step numbers. The code can be found in the attachments. (TODO!!!!!!)
 
 \subsubsection{Results}
-\begin{table}
+\begin{table}[hbp]
     \centering
-    \begin{tabular}{l|c}
+    \caption{Comparison of FID score of the paper and other models with our results}
+    \label{tab:fid_is_comparison}
+    \begin{tabular}{lc}
+        \toprule
                                                                                & \textbf{FID} \\
-        \hline
+        \midrule
         \textbf{Original Paper}                                                & $23.31$      \\
-        \textbf{Our result}                                                    & $24.56$      \\
-        \hline
+        \textbf{Our result}                                                    & $24.56$      \\\addlinespace
         CogView \cite{ding2021cogviewmasteringtexttoimagegeneration}           & $27.10$      \\
         LAFITE \cite{zhou2022lafitelanguagefreetrainingtexttoimage}            & $26.94$      \\
         GLIDE \cite{rezende2014stochasticbackpropagationapproximateinference}  & $12.24$      \\
-        Make-A-Scene \cite{gafni2022makeascenescenebasedtexttoimagegeneration} & $11.84$
+        Make-A-Scene \cite{gafni2022makeascenescenebasedtexttoimagegeneration} & $11.84$      \\
+        \bottomrule
     \end{tabular}
-    \caption{Comparison of FID score of the paper and other models with our results}
-    \label{tab:fid_is_comparison}
 \end{table}
 
 As it can be seen in Tab. \ref{tab:fid_is_comparison}, the FID score is slightly worse. As error bounds for the FID score had not been provided and also no hypothesis testing was performed, it is tricky to exactly evaluate this outcome. The other image generating model's metrics shown are the same, Stable Diffusion was compared to in the original paper. And at least, we see that Stable Diffusion's ranking didn't change when using our metrics within the provided examples.
