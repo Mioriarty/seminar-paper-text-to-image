@@ -61,22 +61,49 @@ objective~\cite{Ouyang2024InstructGPT}. In their experiments, Kirstain et al.
 find that their method outperforms other competitors and even human experts.
 
 \subsubsection{Experiment Description}
-% we want to confirm our suspicion of a worse performing Würstchen by re-doing the pickscore experiment 
-% for this we compare wuerstchen with the sd 1.4 and sd 2.1 as these are the closest to the würstchen performance
-500 images from Pick a pic dataset validation
+In this section, we demonstrate the setup of our experiment to confirm our
+suspicion that W\"urstchen performs worse than presented by Pernias et
+al.~\cite{pernias2024wrstchen}. To achieve this we re-do the PickScore
+experiments conducted by Pernias et al., which they set as their primary
+automated metric. In our experiment we only compare Stable Diffusion
+2.1~\cite{rombach2023sd_2_1} as this model performs worse but is the closest to
+W\"urstchens performance concerning PickScore according to the authors. \\
+
+Concerning the prompts for image generation we chose three different datasets.
+First, we chose MSCOCO with localized narratives~\cite{PontTuset2020LocalizedNarratives}.
+This dataset contains 5000 captions which are highly detailed and multimodal.
+Secondly, we utilize Parti Prompts~\cite{yu2022scalingautoregressivemodelscontentrich}
+containing 1633 prompts. These captions are highly diverse ranging from
+not-detailed to very detailed. Pernias et al. mention that this dataset reflects
+the use case that they intend for their model. In contrast to MSCOCO with
+localized narratives and Parti Prompts the last dataset was not employed by the
+authors of W\"urstchen. We follow the recommendation of Kirstain et
+al.~\cite{kirstain2023pickapic} and choose Pick-a-Pic as our last dataset. The
+validation set includes 500 prompts, which all were created by people are
+``are actual text-to-image users''\cite{kirstain2023pickapic}.\\
+
+In order to show the stability of the PickScore results, we conduct five
+iteration for each prompt, which results in five images for each prompt and
+model. For each iteration, we average across all preference values and take the
+mean over all five iteration of a model.
+
 \subsubsection{Results}
 \begin{table}[t]
-    \caption{Examples of generated images, showing the ground truth, the HED image that was used as the input condition, PITI's result, ControlNet's result and lastly, ControlNet's result when using the prompt ``realistic, hd, photo''.}
+    \caption{This table presents the mean results of Pernias et
+        al.\cite{pernias2024wrstchen}, and mean and standard variation of our
+        experiments. We provide the results for the MSCOCO localized narratives
+        (MSCOCO LN) dataset, the Parti Prompt dataset and the Pick-a-Pic
+        dataset. Each value shows the mean portion of prompts that yield images
+        of W\"urstchen which are preferred by the PickScore model.}
     \label{tab:wuerstchen:results}
     \centering
-    \begin{tabular}{lcccccccc}
+    \begin{tabular}{lccccccc}
         \toprule
-                                                 & \multicolumn{2}{c}{\textbf{MSCOCO LN}} & \phantom{0} & \multicolumn{2}{c}{\textbf{PartiPrompt}} & \phantom{0}           & \multicolumn{2}{c}{\textbf{Pick-a-Pic}}                                                               \\
-        \cmidrule{2-3}\cmidrule{5-6}\cmidrule{8-9}
-        \textbf{W\"urstchen}                     & SD 1.4                                 & SD 2.1      & \phantom{0}                              & SD 1.4                & SD 2.1                                  & \phantom{0} & SD 1.4                & SD 2.1                \\
+        \textbf{W\"urstchen}                     & \textbf{MSCOCO LN}    & \phantom{0} & \textbf{Parti Prompt} & \phantom{0} & \textbf{Pick-a-Pic}   \\
         \midrule
-        Pernias et al.\cite{pernias2024wrstchen} & 79.9\%                                 & 70.0\%      & \phantom{0}                              & 82.1\%                & 74.6\%                                  & \phantom{0} & -                     & -                     \\
-        Our Results                              &                                        &             & \phantom{0}                              & 45.5\%{\tiny$\pm1.2$} & 67.8\%{\tiny$\pm0.9$}                   & \phantom{0} & 51.9\%{\tiny$\pm1.9$} & 73.4\%{\tiny$\pm0.8$} \\
+        Pernias et al.\cite{pernias2024wrstchen} & 70.0\%                & \phantom{0} & 74.6\%                & \phantom{0} & -                     \\
+        Our Results                              & 65.8\%{\tiny$\pm1.0$} & \phantom{0} & 67.8\%{\tiny$\pm0.9$} & \phantom{0} & 73.4\%{\tiny$\pm0.8$} \\
         \bottomrule
     \end{tabular}
 \end{table}
+Table~\ref{tab:wuerstchen:results} demonstrates the results of our experiments compared
