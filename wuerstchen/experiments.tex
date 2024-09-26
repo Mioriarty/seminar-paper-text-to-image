@@ -32,36 +32,51 @@ Stable Diffusion XL~\cite{podell2024sdxl}. Two of these images are then
 presented, and the user decides which image fits better to the prompt. The
 not-preferred image is then replaced by a new image and so on. Kirstain et al.
 mention that their application was used by intrinsically-motivated users who
-they argue to yield
-This application
-was used by user, that Kirstain et al. argue to be  who they
-% Pick A Pic
-% selections are made by intrinsically motivated users instead of paid annotators
-% the authors of the paper suggest to eval models with Pick A Pic, as "which better represent what humans want to generate than mundane captions"
+they argue to yield better results than paid annotators as these users have
+knowledge on how to shape a prompt in order to get the hoped result. The authors
+add a recommendation for researchers to train their model on the Pick-a-Pic
+dataset, because its prompts ``better represent what humans want to generate
+than mundane captions, such as those found in MS-COCO''~\cite{kirstain2023pickapic}.\\
 
-% Pick Score
-% having established a dataset of images that are annotated by human preference -> model that predicts this
-% based on CLIP architecture -> encodes image and text using transformer to a d-dimensional vector returning their inner product s(x, y)
-% two images are compared by taking the scoring function of two images and their prompt another input is the preference distribution vector p
-% the predicted preference hat p is calculated through a softmax-normalization of the scores of the two images
-% the model is trained by minimizing the KL-divergence between the preferences.
-% training objective is analogous to InstructGPT reward model objective
-% pickscore is able to outperform other competitors and human experts
+After establishing a rich dataset with a wide variety of datasets showing the
+preference of users, Kirstain et al. created PickScore~\cite{kirstain2023pickapic}
+to predict user preference. This model is based on the CLIP architecture, which
+means that it encodes a prompt $x$ and an image $y$ in form of $d$-dimensional
+vector utilizing transformers of which it takes the inner-product to compute the scoring function
+$s(x, y)$. PickScore employs $s(x, y)$ on two different images $y_1, y_2$ which
+are both inherent to the prompt $x$. Additionally, the preference distribution
+vector $p$ is available for the data triplet. Let $i$ be the index of the image
+$y_i$, then the predicted preference distribution vector,
+\begin{equation}
+    \hat{p}_i = \frac{\exp s(x, y_i)}{\sum_{j=1}^{2}\exp s(x, y_j)},
+\end{equation}
+is calculated using the softmax-normalization. The model utilizes the
+Kullback-Leibler Divergence~\cite{kullback1951OnInformationandSufficiency} to compute the preference vector,
+\begin{equation}
+    L_{pref} = \sum_{i=1}^{2} p_i (\log p_i - \log\hat{p}_i),
+\end{equation}
+which it seeks to minimize during training. This training objective, is inspired
+by the training objective of the InstructGPT reword model
+objective~\cite{Ouyang2024InstructGPT}. In their experiments, Kirstain et al.
+find that their method outperforms other competitors and even human experts.
 
-\subsubsection{Experiment description}
-50 images from Pick a pic dataset validation
+\subsubsection{Experiment Description}
+% we want to confirm our suspicion of a worse performing Würstchen by re-doing the pickscore experiment 
+% for this we compare wuerstchen with the sd 1.4 and sd 2.1 as these are the closest to the würstchen performance
+500 images from Pick a pic dataset validation
 \subsubsection{Results}
 \begin{table}[t]
     \caption{Examples of generated images, showing the ground truth, the HED image that was used as the input condition, PITI's result, ControlNet's result and lastly, ControlNet's result when using the prompt ``realistic, hd, photo''.}
     \label{tab:wuerstchen:results}
     \centering
-    \begin{tabular}{cccccccc}
+    \begin{tabular}{lcccccccc}
         \toprule
-        \multicolumn{2}{c}{\textbf{MSCOCO Localized Narratives}} & \phantom{0} & \multicolumn{2}{c}{\textbf{PartiPrompt}} & \phantom{0} & \multicolumn{2}{c}{\textbf{Pick-A-Pic}}                                 \\
-        \cmidrule{1-2}\cmidrule{4-5}\cmidrule{7-8}
-        SD 1.4                                                   & SD 2.1      & \phantom{0}                              & SD 1.4      & SD 2.1                                  & \phantom{0} & SD 1.4 & SD 2.1 \\
+                                                 & \multicolumn{2}{c}{\textbf{MSCOCO LN}} & \phantom{0} & \multicolumn{2}{c}{\textbf{PartiPrompt}} & \phantom{0}           & \multicolumn{2}{c}{\textbf{Pick-a-Pic}}                                                               \\
+        \cmidrule{2-3}\cmidrule{5-6}\cmidrule{8-9}
+        \textbf{W\"urstchen}                     & SD 1.4                                 & SD 2.1      & \phantom{0}                              & SD 1.4                & SD 2.1                                  & \phantom{0} & SD 1.4                & SD 2.1                \\
         \midrule
-                                                                 &             & \phantom{0}                              &             &                                         & \phantom{0} &        &        \\
+        Pernias et al.\cite{pernias2024wrstchen} & 79.9\%                                 & 70.0\%      & \phantom{0}                              & 82.1\%                & 74.6\%                                  & \phantom{0} & -                     & -                     \\
+        Our Results                              &                                        &             & \phantom{0}                              & 45.5\%{\tiny$\pm1.2$} & 67.8\%{\tiny$\pm0.9$}                   & \phantom{0} & 51.9\%{\tiny$\pm1.9$} & 73.4\%{\tiny$\pm0.8$} \\
         \bottomrule
     \end{tabular}
 \end{table}
