@@ -6,7 +6,6 @@ ControlNet's functioning can be described by looking at what happends to the ind
 \[
 y = F(x; \Theta).
 \]
-\noindent
 To integrate ControlNet, the parameters $\Theta$ of the original block are frozen/locked, and the block is cloned into a trainable copy with new parameters $\Theta_c$, as seen in Figure~\ref{fig:control_net:network_blocks}. The copy also takes an external conditioning vector $c$ as input.
 \begin{figure}[h!]
     \centering

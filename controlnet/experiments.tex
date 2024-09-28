@@ -33,7 +33,6 @@ For this study, we sampled 20 unseen sketches and used them to generate images w
 %   Average Result Quality: 3.19 ± 1.20
 %   Average Condition Fidelity: 3.07 ± 1.22
 
-\noindent
 \subsubsection{Results}
 Table~\ref{tab:controlnet:experiment} presents the Average Human Ranking (AHR) results for image generation methods based on two evaluation criteria: \textit{Result Quality} and \textit{Condition Fidelity}. The three methods compared are PITI (sketch), ControlNet, and ControlNet (with prompt), with average user rankings reported alongside standard deviations. The ratings range from 1 (worst) to 5 (best), reflecting the participants evaluation of the generated images.
 
@@ -44,7 +43,6 @@ PITI (sketch) achieved the lowest average ranking for result quality, with a sco
 For fidelity to the original sketch, PITI performed relatively well, with an average score of 3.61 ± 1.13. This higher fidelity rating suggests that users felt PITI better adhered to the input sketches compared to the other models. Despite this, the standard deviation of 1.13 suggests some level of disagreement among users. ControlNet received a slightly lower fidelity score of 3.04 ± 1.23, indicating it was less effective at adhering to the original sketch compared to PITI. The larger spread, with a standard deviation of 1.23, reflects more variability in user experiences. ControlNet (with prompt) scored 3.07 ± 1.22, representing a marginal improvement over ControlNet without prompts. This suggests that adding a simple prompt may slightly enhance sketch fidelity, but not enough to surpass PITI. The variability in user ratings remained similar between ControlNet and ControlNet (with prompt).
 \\
 \\
-\noindent
 PITI performed best in terms of \textit{Condition Fidelity} but lagged behind in \textit{Result Quality}. This suggests that while PITI stays true to the input sketches, it sacrifices the overall quality of the output images. ControlNet showed more balanced performance across both criteria, with an improvement in \textit{Result Quality} over PITI but lower \textit{Condition Fidelity}. ControlNet (with prompt) performed best in terms of \textit{Result Quality}, indicating that adding prompts can help boost the perceived image quality, though its impact on \textit{Condition Fidelity} was small. When looking at Table~\ref{tab:controlnet:experiment}, we can see that the standard deviations across all methods and criteria indicate significant variability in user preferences, meaning that while some users rated the methods highly, others did not, suggesting subjective differences in what users considered to be high-quality or similar to the sketch. The different user preferences could be explained by the wide range of participants that performed the experiment. Most participants come from completely different professions and many of them have no major experience with image generating artificial intelligence. This may also significantly impact the final ratings. Some examples of the generated images can be seen in Table~\ref{tab:controlnet:example}.
 \begin{table}[hbp]
     \centering
