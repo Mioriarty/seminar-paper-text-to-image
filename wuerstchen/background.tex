@@ -120,15 +120,15 @@ of Pernias et al. in greater detail.
     \label{fig:wuerstchen:training}
 \end{figure}
 
-\paragraph*{Stage A} The last stage in the image generation pipeline consists of a decoder
-$f_{\Theta}^{-1}$ and translates the latent representation produced by Stage B into
+\paragraph*{Stage A} The last stage of the image generation pipeline consists of a decoder
+$f_{\Theta}^{-1}$, which translates the latent representation produced by Stage B into
 the pixel space. This decoder is part of a VQGAN and Pernias et al. train it as
-Esset et al.~\cite{esser2021tamingtransformershighresolutionimage} describe.
-We touch on this process in Section~\ref{sec:wuerstchen:VQGAN}. During training,
-first an encoder $f_{\Theta}$ compresses an image $\boldsymbol{X}\in\mathbb{R}^{3\times1024\times1024}$. Then the compressed image is
-quantized using a codebook yielding a latent representation $\boldsymbol{X}_q\in\mathbb{R}^{4\times256\times256}$ of the image with,
+described by Esset et al.~\cite{esser2021tamingtransformershighresolutionimage}.
+This process is discussed in Section~\ref{sec:wuerstchen:VQGAN}. During training,
+first an encoder $f_{\Theta}$ compresses an image $\boldsymbol{X}\in\mathbb{R}^{3\times1024\times1024}$. The compressed image is
+then quantized using a codebook, yielding a latent representation $\boldsymbol{X}_q\in\mathbb{R}^{4\times256\times256}$ of the image with,
 $\boldsymbol{X}_q = f_{\Theta}(\boldsymbol{X}).$
-Finally, the decoder $f_{\Theta}^{-1}$ reconstructs the image from the latent.
+Finally, the decoder $f_{\Theta}^{-1}$ reconstructs the image from the latent representation.
 The decoder and encoder are supposed to fulfill the equation,
 \begin{equation}
     f_{\Theta}^{-1}(f_{\Theta}(\boldsymbol{X})) = f_{\Theta}^{-1}(\boldsymbol{X}_q) \approx \boldsymbol{X}.
@@ -148,17 +148,17 @@ the foundation of Stage C's training process.
 
 The semantic compressor is a feature extractor of any kind that is supposed to
 compress an image to a high degree. The authors advise to choose a model with a
-good feature representation and small network size in order to fasten the training
-precess of both Stages B and C. Additionally, they mention the size of the
-feature space, as too few dimensions would lead to a loss of detail, while to
+good feature representation and small network size in order to speed up the training
+process of both Stages B and C. Additionally, they mention the size of the
+feature space, as too few dimensions would lead to a loss of detail, while too
 many dimensions can have a great impact on the computation costs and time. For
-these reasons, Pernias et al. chose the CNN, ImageNet1k pre-trained EfficientV2 (S)~\cite{Tan2021EfficientNetV2}.
-The semantic compressor gets a bicubic interpolated version of the image and
-produces its highly compressed version. Afterward, a $1\times1$ convolution is
+these reasons, Pernias et al. chose the CNN ImageNet1k pre-trained EfficientV2 (S)~\cite{Tan2021EfficientNetV2}.
+The semantic compressor receives a bicubic interpolated version of the image and
+produces its highly compressed version. A $1\times1$ convolution is then
 applied to reduce the depth and further compress the latent representation $\mathcal{C}_{\text{SC}}\in\mathbb{R}^{16\times24\times24}$.
 
 The embeddings $\mathcal{C}_{\text{SC}}$ of the semantic compressor and the
-text-conditioning $\mathcal{C}_{\text{text}}$ are both implemented into the training process using Cross-Attention~\cite{vaswani2023attentionneed}.
+text-conditioning $\mathcal{C}_{\text{text}}$ are both incorporated into the training process using Cross-Attention~\cite{vaswani2023attentionneed}.
 Pernias et al. add noise to $\mathcal{C}_{\text{SC}}$ and randomly drop it to
 sample with classifier-free-guidance~\cite{ho2022classifierfreediffusionguidance}.
 Using both the noised latent representation of the encoder $f_\Theta$ and the
@@ -179,8 +179,8 @@ the time step $t$ as an input and predicts the error,
 \begin{equation}
     \bar{\epsilon} = \frac{\boldsymbol{X}_{\text{SC}, t} - \boldsymbol{A}}{|1-\boldsymbol{B}| + 1e^{-5}} \quad \text{with} \quad \boldsymbol{A}, \boldsymbol{B} = f_\Theta(\boldsymbol{X}_{\text{SC}, t},\mathcal{C}_{\text{text}}, t).
 \end{equation}
-As the authors mention, they found this change of objective to yield a more
-stable training process. The text-embeddings are produced using
-CLIP-H~\cite{Ilharco2021OpenCLIP} and are dropped 5\% of the times. In the same
-way as the Stage B model, the model $f_\Theta$ is trained using the diffusion
-procedure, while conditioning is applied after each block using cross-attention.
+As the authors mention, they found that this change in objective yielded a more
+stable training process. The text embeddings are produced using
+CLIP-H~\cite{Ilharco2021OpenCLIP} and are dropped 5\% of the time. Similar to 
+the Stage B model, the model $f_\Theta$ is trained using the diffusion
+procedure, with conditioning applied after each block using cross-attention.
