@@ -4,24 +4,24 @@ of a \emph{Latent Diffusion Model} (LDM) which was introduced,
 by Rombach et al.~\cite{rombach2022stablediffusion} in 2022. The LDM methods
 generate images by denoising a noisy latent image gradually step by step. To
 conduct the reduction of noise and the introduction of semantics, the LDM takes
-in an encoding of a text-prompt called token, or embedding and utilizing it for
-each diffusion step. Lastly the latent representation is decoded into the
+in an encoding of a text-prompt, called token or embedding, and utilizes it for
+each diffusion step. Lastly, the latent representation is decoded into the
 pixel space. By mostly navigating in low dimensional latent spaces and
-utilizing the U-Net to slowly induce semantics into the representation, this
+using the U-Net to gradually introdue semantics into the representation, this
 approach is able to yield high resolution images~\cite{rombach2022stablediffusion}.
 This improvement in image quality has a disadvantage: the time the models take
 to train. For example, an important model is Stable Diffusion (SD), the version
 1.4 takes 150,000 GPU hours~\cite{rombach2022sd_1_4} while version 2.1 which
 grants an upgrade in image quality has a further increased training time of
 200,000 GPU hours~\cite{rombach2023sd_2_1}. A high image resolution comes with
-an increased image complexity leading to a more data-intensive training and
+an increased image complexity leading to more data-intensive training and
 high computational costs. Thus, Pernias et al.~\cite{pernias2024wrstchen}
-introduce \emph{W\"urstchen}. An approach that tries to decrease the training
+introduce \emph{W\"urstchen}. An approach that aims to decrease the training
 time and computational cost, by splitting the training process into three parts
 and mostly computing in small latent spaces.
 
 This section aims to describe the methods used by W\"urstchen based on the work
-of Pernias et al.~\cite{pernias2024wrstchen}. First we describe the VQGAN by
+of Pernias et al.~\cite{pernias2024wrstchen}. First, we describe the VQGAN by
 Esser et al.~\cite{esser2021tamingtransformershighresolutionimage} as this is
 the model that is the foundation for Stage A of W\"urstchen. Then, we continue
 to shed light onto the general structure and the image generation process. Finally, we
