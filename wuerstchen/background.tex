@@ -97,15 +97,15 @@ Pernias et al. train each of these stages separately, which we describe in the
 following section.
 \subsubsection{Training}
 \label{sec:wuerstchen:training}
-The preceding section provides an overview of the architecture and structure
+The preceding section, provides an overview of the architecture and structure
 of W\"urstchen.
 In order to train the model in a more efficient manner, Pernias et
 al.~\cite{pernias2024wrstchen} introduce a split training. This approach enables
-them to train mainly in low-dimensional latent spaces, which thus yields
+them to mainly train in low-dimensional latent spaces, which thus yields
 performance enhancements. Pernias et al. perform the training in a reverse order
-compared to the image generation (see Figure~\ref{fig:wuerstchen:arch}). This is
-because of the dependencies between Stage A and Stage B, and Stage B and Stage C.
-First they train Stage A which defines the latent space (4:1) through its VQGAN.
+compared to the image generation process (see Figure~\ref{fig:wuerstchen:arch}).
+The reason for this are the dependencies between Stage A and Stage B, and Stage B and Stage C.
+First, they train Stage A which defines the latent space (4:1) through its VQGAN.
 Following, Stage B learns to reconstruct this latent space using embeddings in a
 lower dimensional latent space (42:1) which are produced by a semantic compressor.
 Finally, Stage C trains to reconstruct the latent space of the semantic
@@ -120,7 +120,7 @@ of Pernias et al. at a greater detail.
     \label{fig:wuerstchen:training}
 \end{figure}
 
-\paragraph*{Stage A} The last stage of the model consists of a decoder
+\paragraph*{Stage A} The last stage in the image generation pipeline consists of a decoder
 $f_{\Theta}^{-1}$ and translates the latent representation produced by Stage B into
 the pixel space. This decoder is part of a VQGAN and Pernias et al. train it as
 Esset et al.~\cite{esser2021tamingtransformershighresolutionimage} describe.
@@ -134,41 +134,42 @@ The decoder and encoder are supposed to fulfill the equation,
     f_{\Theta}^{-1}(f_{\Theta}(\boldsymbol{X})) = f_{\Theta}^{-1}(\boldsymbol{X}_q) \approx \boldsymbol{X}.
 \end{equation}
 During training the encoder, the decoder and the codebook are defined. The
-codebook defines the latent space with the compression ratio of 4:1, which is
-the codomain of Stage B.
+encoder defines the latent space with a 4:1 compression ratio, which is
+the codomain of the next stage.
 
 \paragraph*{Stage B} This stage reconstructs the latent space defined by the
 VQGAN in the training process of Stage A. Therefore, the encoder $f_{\Theta}$
-without the quantization from the preceding stage is used to compress the image.
-After noising, the representation $\tilde{\boldsymbol{X}}_t\in\mathbb{R}^{4\times1256\times256}$ and given to the model $f_\vartheta$. For
+is used to compress the image but without the quantization from the preceding stage.
+After noising, the representation $\tilde{\boldsymbol{X}}_t\in\mathbb{R}^{4\times1256\times256}$
+is given to the model $f_\vartheta$. For
 conditioning Stage B uses both the text embeddings and the results of a
 \emph{semantic compressor} $e_{\Phi}$. This semantic compressor mimics Stage C and will be
-the foundation of its training process.
+the foundation of Stage C's training process.
 
 The semantic compressor is a feature extractor of any kind that is supposed to
 compress an image to a high degree. The authors advise to choose a model with a
-good feature representation and small size in order to fasten the training
+good feature representation and small network size in order to fasten the training
 precess of both Stages B and C. Additionally, they mention the size of the
 feature space, as too few dimensions would lead to a loss of detail, while to
 many dimensions can have a great impact on the computation costs and time. For
-these reasons, Pernias et al. chose the CNN ImageNet1k pre-trained EfficientV2 (S)~\cite{Tan2021EfficientNetV2}.
+these reasons, Pernias et al. chose the CNN, ImageNet1k pre-trained EfficientV2 (S)~\cite{Tan2021EfficientNetV2}.
 The semantic compressor gets a bicubic interpolated version of the image and
 produces its highly compressed version. Afterward, a $1\times1$ convolution is
-applied to reduce the depth and further compress the latent representation in $\mathbb{R}^{16\times24\times24}$.
+applied to reduce the depth and further compress the latent representation $\mathcal{C}_{\text{SC}}\in\mathbb{R}^{16\times24\times24}$.
 
 The embeddings $\mathcal{C}_{\text{SC}}$ of the semantic compressor and the
-text-conditioning $\mathcal{C}_{\text{text}}$ are both implemented using Cross-Attention~\cite{vaswani2023attentionneed}.
+text-conditioning $\mathcal{C}_{\text{text}}$ are both implemented into the training process using Cross-Attention~\cite{vaswani2023attentionneed}.
 Pernias et al. add noise to $\mathcal{C}_{\text{SC}}$ and randomly drop it to
 sample with classifier-free-guidance~\cite{ho2022classifierfreediffusionguidance}.
 Using both the noised latent representation of the encoder $f_\Theta$ and the
-conditioning the model $f_\vartheta$ trains with the standard diffusion
+conditioning, the model $f_\vartheta$ trains with the standard diffusion
 procedure as we discuss in Section~\ref{sec:stabel_diffusion:training}.
 
-\paragraph*{Stage C} The last stage, is supposed to reconstruct the latent space
+\paragraph*{Stage C} The last stage is supposed to reconstruct the latent space
 defined by the semantic compressor $e_\Phi$. Thus, the embeddings
-$\mathcal{C}_{\text{SC}}$ are generated as explained for Stage B. To the latent
-representation $\boldsymbol{X}_{\text{SC}} = \mathcal{C}_{\text{SC}}$, a weighted noise $\epsilon$
-is added,
+$\mathcal{C}_{\text{SC}}$ are generated as explained for Stage B. Pernias et
+al. add a weighted noise to the latent representation
+$\boldsymbol{X}_{\text{SC}} = \mathcal{C}_{\text{SC}}$ generated by $e_\Phi$,
 \begin{equation}
     \boldsymbol{X}_{\text{SC}, t} = \sqrt{\bar{\alpha}_t}\cdot\boldsymbol{X}_{\text{SC}}+\sqrt{1-\bar{\alpha}_t}\cdot\epsilon,
 \end{equation}
