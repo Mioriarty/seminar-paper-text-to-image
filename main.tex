@@ -74,7 +74,7 @@ In this chapter, we will give an overview of the inner workings of stable diffus
 Let's assume that all machine learning components already have their trained weights and biases. Equipped with these, we will go through step by step how a text input is transformed into an image. After that, the training process is presented.
 
 \subsubsection{Conditioning}
-For stable diffusion, the conditioning process is just a series of different existing components that are plugged together with the goal of semantically understanding the input prompt. First, the input sentence is tokenized. They used the BERT tokenizer\cite{devlin2019bert}. Basically, tokenization means breaking the input into small pieces called tokens. These tokes can be thought of as words or parts of words.
+For stable diffusion, the conditioning process is a series of different existing components that are plugged together with the goal of semantically understanding the input prompt. First, the input sentence is tokenized. They used the BERT tokenizer\cite{devlin2019bert}. Basically, tokenization means breaking the input into small pieces called tokens. These tokes can be thought of as words or parts of words.
 
 Second, these tokens are embedded in a Euclidean vector space. This already encodes some semantic meaning. Tokens that have similar meanings are mapped to vectors that point to approximately the same region in this high-dimensional space. For example, the words "achieve" and "accomplish" would be closer than "achieve" and "annoying". But even more, directions or distances can be interpreted. This could be thought of as relations between words. For example, the embedding of "Germany" and "Berlin" is expected to have the same distance as "Spain" and "Madrid".
 
