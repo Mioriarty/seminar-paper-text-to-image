@@ -2,7 +2,7 @@
 As latent diffusion models such as Stable
 Diffusion~\cite{rombach2022stablediffusion} yield high image quality they come
 with two disadvantages: the training time and the computational costs. Thus,
-the need for a efficacy improvement arises. In this section, we present other
+the need for an efficiency improvement arises. In this section, we present other
 approaches to solve these issues for general diffusion models.
 
 In 2020, Ho et al.~\cite{ho2020denoisingdiffusionprobabilisticmodels} introduced
@@ -12,11 +12,11 @@ al.~\cite{Nichol2021ImprovedDenoisingDiffusionProbabilisticModels} provide a
 modification in order to improve training time and sample quality. They
 proposed to use cosine-based noise schedules leading to a faster
 convergence by distributing noise more effectively during training.
-Furthermore, in contrast to DDPM they introduce learnable variances in the
+Furthermore, in contrast to DDPM they proposed learnable variances in the
 reverse process, allowing the model to better capture uncertainties.
 
 Focussing on the improvement of sampling time and efficiency,
-Zhang et al.~\cite{zhang2023fastsamplingdiffusionmodels} propose the
+Zhang et al.~\cite{zhang2023fastsamplingdiffusionmodels} suggested the
 Diffusion Exponential Integrator Sampler (DEIS) to accelerate the reverse
 diffusion process. By employing higher-order solvers for stochastic
 differential equations (SDEs), they significantly reduced the number of
