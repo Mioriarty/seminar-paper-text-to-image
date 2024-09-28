@@ -33,11 +33,11 @@ The \emph{Vector Quantized Generative Adversarial Network} (VQGAN) was
 introduced by Esser et al.~\cite{esser2021tamingtransformershighresolutionimage}
 in 2021 and builds on the \emph{Vector Quantized Variational Autoencoder}
 model~\cite{vdOord2017NeuralDiscreteRepresentationLearning}. The VQGAN combines
-the strength of \emph{Convolutional Neural Networks} (CNN) to exploit knowledge
-of local features and the strength of autoregressive transformer architectures
+the strengths of \emph{Convolutional Neural Networks} (CNNs) in exploiting local 
+features and the strength of autoregressive transformer architectures
 to model long-range relations in generated images. Esser et al. introduce
 several CNNs to the VQGAN for the training procedure. First, the Encoder CNN
-compresses an image $x$ into the compressed version $\hat{z}$. Afterward,
+compresses an image $x$ into the compressed version $\hat{z}$. Next,
 the VQGAN utilizes the quantization $\boldsymbol{q}[\cdot]$ using a
 perceptually rich and discrete codebook $\mathcal{Z}$ to create the quantized
 latent representation,
@@ -48,7 +48,7 @@ by replacing the spatial representation $\hat{z}_{ij}$ with the closest
 codebook entry $z_{\boldsymbol{k}}$. The latent representation
 $z_{\boldsymbol{q}}$ is a sequence of the entries of the codebook $\mathcal{Z}$.
 Then, the Decoder CNN reconstructs the image $x$ using the quantized latent
-representation $z_{\boldsymbol{q}}$. Finally, in order to create a rich codebook
+representation $z_{\boldsymbol{q}}$. Finally, to create a rich codebook
 a patch-based discriminator CNN is introduced to find the differences between
 the real and reconstructed images. An autoregressive transformer model then
 makes use of the codebook to generate high-resolution synthetic images.
@@ -58,24 +58,24 @@ makes use of the codebook to generate high-resolution synthetic images.
     \caption{Visualization of the W\"urstchen architecture, introduced by
         Pernias et al.~\cite{pernias2024wrstchen}. It shows that the first stage C
         creates a highly compressed representation from noise and text-conditioning.
-        Both this representation and the text-prompt are then utilized as conditioning by stage B
+        Both this representation and the text-prompt are then utilized as conditionings by stage B
         to create a higher dimensional latent representation. Lastly, the decoder
         in stage A generates an image from this latent representation.}
     \label{fig:wuerstchen:arch}
 \end{figure}
 In 2024, Pernias et al.~\cite{pernias2024wrstchen} introduce \emph{W\"urstchen}.
-With this method they set out to decrease the computation cost and training
+With this method, they aim to decrease the computational cost and training
 time of image generation models which are based on latent diffusion~\cite{rombach2022stablediffusion}.
 Figure~\ref{fig:wuerstchen:arch} illustrates the structure of W\"urstchen which
-is build up from three stages. The first stage, Stage C, comprises a
+includes three stages. The first stage, Stage C, comprises a
 text-conditional diffusion model $f_\Theta$ that operates on a low-dimensional
-latent space with a compression ratio of 42:1. This stage starts the image
-generation pipeline by taking latent random noise
+latent space with a compression ratio of 42:1. In this stage, the image generation 
+pipeline begins by taking latent random noise
 $\boldsymbol{X}_{\text{SC}, \tau_C} = \mathcal{N}(0, \boldsymbol{\text{I}})$ and
-uses the DDPM algorithm by Ho et al.~\cite{ho2020denoisingdiffusionprobabilisticmodels} to iteratively
+using the DDPM algorithm by Ho et al.~\cite{ho2020denoisingdiffusionprobabilisticmodels} to iteratively
 sample the Semantic Compressor (see Section~\ref{sec:wuerstchen:training})
 latent representations on text-conditioning to generate the latent representation
-$\bar{\boldsymbol{X}}_{\text{SC}}\in\mathbb{R}^{16\times24\times24}$. Because of
+$\bar{\boldsymbol{X}}_{\text{SC}}\in\mathbb{R}^{16\times24\times24}$. Due to
 the low dimensionality of the latent space, $f_\Theta$ does not utilize the
 typical U-Net structure as the authors decided that any downsampling would do
 harm to the image quality. The next stage, Stage B, employs a diffusion model
@@ -84,10 +84,10 @@ text-prompt and the embeddings $\mathcal{C}_{\text{SC}}$ of the flattened
 $\bar{\boldsymbol{X}}_{\text{SC}}$ from Stage C. This model generates a
 higher-dimensional latent representation
 $\tilde{\boldsymbol{X}}\in\mathbb{R}^{4\times256\times256}$ by again employing
-the DDPM algorithm. The latent space in which $\tilde{\boldsymbol{X}}$ lives,
+the DDPM algorithm. The latent space in which $\tilde{\boldsymbol{X}}$ lives
 has a compression ratio of 4:1 and is created during the training process by a
 VQGAN. Stage A of W\"urstchen consists of the decoder $f_\Theta^{-1}$ which is
-part of the same  VQGAN. The decoder translates the latent representation
+part of the same VQGAN. The decoder translates the latent representation
 $\tilde{\boldsymbol{X}}$ to the final image,
 \begin{equation}
     \bar{\boldsymbol{X}} = f_\Theta^{-1}(\tilde{\boldsymbol{X}}),
