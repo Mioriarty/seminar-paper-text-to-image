@@ -104,17 +104,24 @@ This simple representation is not enough to understand the input. The meaning of
 \fi
 
 \subsubsection{Iterative Denoising}
-Iterative denoising is the crucial step in image generation. Remember, the goal is to generate a latent representation of the final image, which can be thought of as a low-dimensional representation, or just a smaller image. We start with random noise in this reduced size. Typically, this would be just a random sample from a Gaussian distribution. The goal will then be to gradually remove the noise to obtain clear, detailed images that match the description from the prompt. (ADD IMAGE!!!!!!)
+Iterative denoising is the crucial step in image generation. Remember, the goal is to generate a latent representation of the final image, which can be thought of as a low-dimensional representation, or just a smaller image. We start with random noise in this reduced size. Typically, this would be just a random sample from a Gaussian distribution. The goal will then be to gradually remove the noise to obtain clear, detailed images that match the description from the prompt.
 
-It starts with a noised image, denoted as $x_T$, where $T$ is the total number of steps in the reverse diffusion process. Then the model uses a neural network trained that is trained to evaluate the function $\varepsilon_\theta(x_t,t,c)$ that estimates the noise at the current noised image $x_t$ in each step, $c$ is the conditioning input. By approximating the current noise, we can just remove the noise, to slightly denoise the image.
+It starts with a noised image, denoted as $x_T$, where $T$ is the total number of steps in the reverse diffusion process. Then the model uses a neural network trained that is trained to evaluate the function $\varepsilon_\theta(x_t,t,c)$ that estimates the noise at the current noised image $x_t$, $0 \leq t \leq T$ in each step, $c$ is the conditioning input. By approximating the current noise, we can just remove the noise, to slightly denoise the image.
 $$x_{t-1}=x_t-\alpha_t \varepsilon_\theta(x_t,t,c)+ \alpha_t z_t$$
 where $\alpha_t$ controls the step size for noise removal, and $\alpha_t z_t$  ($z_t$ is some Gaussian noise) adds controlled noise to maintain some stochasticity. This update moves the noisy image closer to a cleaner version, progressively refining it. This step is performed $T$-times, and at $t=0$ we arrived at a denoised latent representation of the final image.
 
-\paragraph{U-Net (Add image!!!)}
+\paragraph{U-Net}
 One might wander, how do we calculate $\varepsilon_\theta(x_t,t,c)$ and thus approximate the current noise. This is done using a neural network architecture called U-Net\cite{ronneberger2015unetconvolutionalnetworksbiomedical}, that is well-suited for tasks where you need to transform one image into another, as we need it here.
-The U-Net architecture gets its name from its distinctive "U" shape, which reflects the way the network processes information. The U-Net consists of two main parts: the downsampling path  and the upsampling path, connected by a bottleneck in the middle.
+The U-Net architecture gets its name from its distinctive "U" shape (see fig. \ref{fig:unet}), which reflects the way the network processes information. The U-Net consists of two main parts: the downsampling path  and the upsampling path, connected by a bottleneck in the middle.
 In the downsampling path, the U-Net gradually reduces the image size while capturing important features. Once the image reaches the bottleneck, it has been compressed into a highly abstract representation. This is where the most essential features are concentrated, and it serves as the transition point between the downsampling and upsampling paths. The upsampling path then constructs the resulting image, restoring the original size and adding details. Skip connections between corresponding layers in these paths help preserve fine details by directly passing information from the encoder to the decoder.
 The resulting is then the approximated noise at this stage of the denoising process, which can be further used, as described above.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{assets/u-net-illustration-correct-scale2.pdf}
+    \caption{Depiction of U-Net architecture (example for 32x32 pixels in the lowest resolution). Image Source \cite{ronneberger2015unetconvolutionalnetworksbiomedical}}
+    \label{fig:unet}
+\end{figure}
 
 \subsubsection{Decoder}
 The last part involves converting the latent representation of some image to the image. As the latent representation is lower dimensional, we somehow need to add detail. To achieve this, the decoder typically employs a series of upsampling and convolutional layers. These layers progressively increase the spatial dimensions of the latent representation while refining the details at each step. The process is somewhat analogous to zooming in on a blurred thumbnail, but with the added capability of restoring all the fine details based on the encoded information.
