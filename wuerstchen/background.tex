@@ -18,7 +18,7 @@ an increased image complexity leading to a more data-intensive training and
 high computational costs. Thus, Pernias et al.~\cite{pernias2024wrstchen}
 introduce \emph{W\"urstchen}. An approach that tries to decrease the training
 time and computational cost, by splitting the training process into three parts
-and mostly computing in small latent spaces.\\
+and mostly computing in small latent spaces.
 
 This section aims to describe the methods used by W\"urstchen based on the work
 of Pernias et al.~\cite{pernias2024wrstchen}. First we describe the VQGAN by
@@ -27,7 +27,6 @@ the model that is the foundation for Stage A of W\"urstchen. Then, we continue
 to shed light onto the general structure and the image generation process. Finally, we
 describe the training processes of each W\"urstchen stage as Pernias et al.
 provide them.
-
 \subsubsection{VQGAN}
 \label{sec:wuerstchen:VQGAN}
 The \emph{Vector Quantized Generative Adversarial Network} (VQGAN) was
@@ -53,7 +52,6 @@ representation $z_{\boldsymbol{q}}$. Finally, in order to create a rich codebook
 a patch-based discriminator CNN is introduced to find the differences between
 the real and reconstructed images. An autoregressive transformer model then
 makes use of the codebook to generate high-resolution synthetic images.
-
 \subsubsection{W\"urstchen Structure and Image Generation}
 \begin{figure}[t]
     \includegraphics[width=\textwidth]{assets/wuerstchen_arch.pdf}
@@ -97,7 +95,6 @@ $\tilde{\boldsymbol{X}}$ to the final image,
 which lives in the pixel space with $\bar{\boldsymbol{X}}\in\mathbb{R}^{3\times1024\times1024}$.
 Pernias et al. train each of these stages separately, which we describe in the
 following section.
-
 \subsubsection{Training}
 \label{sec:wuerstchen:training}
 The preceding section provides an overview of the architecture and structure
@@ -114,7 +111,6 @@ lower dimensional latent space (42:1) which are produced by a semantic compresso
 Finally, Stage C trains to reconstruct the latent space of the semantic
 compressor using text-conditioning. The following paragraphs shed light on the methods
 of Pernias et al. at a greater detail.
-
 \begin{figure}[t]
     \includegraphics[width=\textwidth]{assets/wuerstchen_training.pdf}
     \caption{Visualization of the training processes of each W\"urstchen stage~\cite{pernias2024wrstchen}.
@@ -147,7 +143,7 @@ without the quantization from the preceding stage is used to compress the image.
 After noising, the representation $\tilde{\boldsymbol{X}}_t\in\mathbb{R}^{4\times1256\times256}$ and given to the model $f_\vartheta$. For
 conditioning Stage B uses both the text embeddings and the results of a
 \emph{semantic compressor} $e_{\Phi}$. This semantic compressor mimics Stage C and will be
-the foundation of its training process.\\
+the foundation of its training process.
 
 The semantic compressor is a feature extractor of any kind that is supposed to
 compress an image to a high degree. The authors advise to choose a model with a
@@ -158,7 +154,7 @@ many dimensions can have a great impact on the computation costs and time. For
 these reasons, Pernias et al. chose the CNN ImageNet1k pre-trained EfficientV2 (S)~\cite{Tan2021EfficientNetV2}.
 The semantic compressor gets a bicubic interpolated version of the image and
 produces its highly compressed version. Afterward, a $1\times1$ convolution is
-applied to reduce the depth and further compress the latent representation in $\mathbb{R}^{16\times24\times24}$. \\
+applied to reduce the depth and further compress the latent representation in $\mathbb{R}^{16\times24\times24}$.
 
 The embeddings $\mathcal{C}_{\text{SC}}$ of the semantic compressor and the
 text-conditioning $\mathcal{C}_{\text{text}}$ are both implemented using Cross-Attention~\cite{vaswani2023attentionneed}.
