@@ -1,12 +1,11 @@
 \subsection{W\"urstchen}
-As Stable Diffusion~\cite{rombach2022stablediffusion} models yield high image quality they come with two
-disadvantages: the training time and the computational costs. Thus, the need
-for a efficacy improvement arises. In this section, we present other approaches
-to solve this issue.
+As latent diffusion models such as Stable
+Diffusion~\cite{rombach2022stablediffusion} yield high image quality they come
+with two disadvantages: the training time and the computational costs. Thus,
+the need for a efficacy improvement arises. In this section, we present other
+approaches for general diffusion models to solve this issue.
 
-In the following, we will present some literature that focuses on improving the
-efficiency of general diffusion models. In 2020, Ho et
-al.~\cite{ho2020denoisingdiffusionprobabilisticmodels} introduced
+In 2020, Ho et al.~\cite{ho2020denoisingdiffusionprobabilisticmodels} introduced
 the  denoising diffusion probabilistic model (DDPM) which yielded promising
 results in generative modeling. Building on this work, Nichol et
 al.~\cite{Nichol2021ImprovedDenoisingDiffusionProbabilisticModels} provide a
@@ -16,13 +15,21 @@ convergence by distributing noise more effectively during training.
 Furthermore, in contrast to DDPM they introduce learnable variances in the
 reverse process, allowing the model to better capture uncertainties.
 
-Zheng et al.~\cite{zhang2023fastsamplingdiffusionmodels} focus on the
+Furthermore, Zhang et al.~\cite{zhang2023fastsamplingdiffusionmodels} focus on the
 improvement of sampling time and efficiency. To achieve this, they propose the
-Diffusion Exponential Integrator Sampler (DEIS) which solves stochastic
-differential equations more efficiently. W\"urstchen on the other hand, works
-in compact latent spaces to reduce computational costs while implementing
-cosine-based schedules as the improved DDPM does.
+Diffusion Exponential Integrator Sampler (DEIS) to accelerate the reverse
+diffusion process. By selectively training on masked portions of the data,
+their approach reduces training iterations while preserving high-fidelity
+samples, making diffusion models more efficient and scalable to larger
+datasets.
 
-In the context of Stable Diffusion,
+In order to efficiently train large diffusion models, Zheng et
+al.~\cite{zheng2024fast} introduce masked transformers. Their approach
+selectively masks portions of the input data during training, enabling the
+model to focus on reconstructing these masked regions. This selective training
+reduces the amount of data processed in each iteration
 
-
+W\"urstchen on the other hand, works in compact latent spaces in two-stage
+generative process to reduce computational costs while also implementing
+cosine-based schedules for the training of the C Stage (see
+Section~\ref{sec:wuerstchen:training}) as the improved DDPM does.
