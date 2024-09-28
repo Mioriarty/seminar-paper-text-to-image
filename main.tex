@@ -142,15 +142,15 @@ To prevent the latent space from becoming arbitrarily dispersed and to encourage
 Once trained, the VAE can be used to generate latent representations of images, which are essential for the subsequent training of the U-Net, which we will explore now:
 
 \paragraph{Training the U-Net}
-With the trained VAE at hand, the next step is to train the U-Net, a critical component in the denoising process. The U-Net is trained within the framework of a Denoising Diffusion Probabilistic Model (DDPM)\cite{ho2020denoisingdiffusionprobabilisticmodels}, a generative model that iteratively refines a noisy image to recover the underlying clean image. The training process for the U-Net goes like this.
+With the trained VAE, the next step is to train the U-Net, a critical component in the denoising process. The U-Net is trained within the framework of a Denoising Diffusion Probabilistic Model (DDPM)\cite{ho2020denoisingdiffusionprobabilisticmodels}, a generative model that iteratively refines a noisy image to recover the underlying clean image. The training process for the U-Net proceeds as follows.
 
-Begin with a labeled dataset of images. In the case of Stable Diffusion, ImageNet\cite{deng2009imagenet} was used. Each image is passed through the trained encoder of the VAE to obtain its latent representation. This latent space is of lower dimensionality compared to the original image space, making the learning process more computationally efficient.
+Begin with a labeled dataset of images. In the case of Stable Diffusion, the ImageNet dataset~\cite{deng2009imagenet} was used. Each image is passed through the trained encoder of the VAE to obtain its latent representation. This latent space has lower dimensionality than the original image space, increasing the computational efficiency of the learning process.
 
-We now add Gaussian noise to the latent representation of an image over multiple time steps, ultimately transforming it into a distribution of pure noise. This sequence, called Forward Diffusion, of increasingly noisy images constitutes the training data for the U-Net.
+Gaussian noise is added to the latent representation of an image over multiple time steps, ultimately transforming it into a distribution of pure noise. This sequence of increasingly noisy images, referred to as Forward Diffusion, constitutes the training data for the U-Net.
 
-The core task of the U-Net is to predict the noise that was added to a given noisy image. For each time step, the U-Net takes as input the noisy image and a conditioning vector derived from the text label using the pretrained transformer. It then predicts the noise component that was added during the forward diffusion process. The true noise component is computed as the difference between consecutive noisy images in the sequence.
+The primary task of the U-Net is to predict the noise that was added to a given noisy image. For each time step, the U-Net takes as input the noisy image and a conditioning vector derived from the text label using the pretrained transformer. It then predicts the noise component that was added during the forward diffusion process. The actual noise component is computed as the difference between consecutive noisy images in the sequence.
 
-The training objective is formulated as a mean squared error (MSE) between the predicted noise and the actual noise. By minimizing this loss, the U-Net learns to accurately estimate the noise at each step, enabling it to reverse the diffusion process during inference, effectively denoising the image and recovering the clean latent representation.
+The training objective is defined as the mean squared error (MSE) between the predicted noise and the actual noise. By minimizing this loss, the U-Net learns to accurately estimate the noise at each step. This enables it to reverse the diffusion process during inference, effectively denoising the image and recovering the clean latent representation.
 
 \include{wuerstchen/background}
 \include{controlnet/background}
