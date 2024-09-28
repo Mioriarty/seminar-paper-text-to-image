@@ -64,7 +64,7 @@ Two-stage approaches \cite{DBLP:conf/iclr/DaiW19, esser2021tamingtransformershig
 \label{heading:subsection:stable_diffusion}
 In early 2022, computer scientists from LMU Munich and IWR Heidelberg proposed an improved approach to achieve high-resolution image synthesis\cite{rombach2022stablediffusion}. They called this method "latent diffusion models". It introduced the necessary performance boost to make the productive use and training of image models feasible on a large scale. But diffusion models were already known. The new idea was to generate a low-dimensional representation of the image by denoising and then upscaling it, instead of generating the full image by iterative diffusion. This small change was enough to achieve the required performance increase. Later, the descendant family of models was called "Stable Diffusion".
 
-In this chapter, we will give an overview of the inner workings of stable diffusion, focusing on the text-to-image technique. Later, we will also show how to extend it to implement in-painting. It consists of three main parts:
+In this chapter, we will give an overview of the inner workings of stable diffusion, focusing on the text-to-image technique. It consists of three main parts:
 \begin{enumerate}
     \item Text input is converted into conditioning vectors. This is done using a transformer architecture.
     \item The main step is iterative denoising. Here, the conditioning vectors influence the resulting latent representation. A neural network called U-net does the heavy lifting.
