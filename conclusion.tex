@@ -1,30 +1,30 @@
 \section{Conclusion}
 In this paper, we looked into three different works on diffusion models. First,
 we explored how Stable Diffusion's~\cite{rombach2022stablediffusion}
-performance boost enables feasible image generation on a larger scale, by
+performance boost enables feasible image generation on a larger scale by
 leveraging the latent space rather than working directly in pixel space. We
-re-conducted the FID score experiment which confirmed that the results of
+reconducted the FID score experiment, which confirmed that the results of
 Rombach et al.~\cite{rombach2022stablediffusion} are reproducible, indicating a
 well-conducted experiment. Additionally, we examined the details and behavior
 of the FID score~\cite{heusel2018ganstrainedtimescaleupdate}, proposing an
 improved version, though further research is needed to fully understand its
 behavior especially concerning generalization.
 
-Secondly we investigated W\"urstchen~\cite{pernias2024wrstchen}, which promises
+Secondly, we investigated W\"urstchen~\cite{pernias2024wrstchen}, which promises
 to improve training efficacy of latent diffusion models while keeping or
 improving the image quality with latent diffusion models of the same dimensions.
-Based on our own perception we stated the hypothesis that W\"urstchen performs
-worse than the results of the PickScore calculated by Pernias et al. portrait.
+Based on our own perception, we stated the hypothesis that W\"urstchen performs
+worse than the PickScore calculated by Pernias et al. indicates.
 Our results confirm our suspicion as the preference of W\"urstchen is lower
-than demonstrated by Pernias et al.~\cite{pernias2024wrstchen} while still in
-range to align with their conclusion to keep a level in image quality with
-other latent diffusion models of the same size. To get more accurate
-reproducible results we recommend multiple iterations of the experiments.
+than demonstrated by Pernias et al.~\cite{pernias2024wrstchen}, while still within 
+range to align with their conclusion to maintain a level of image quality comparable
+with other latent diffusion models of the same size. To get accurate,
+reproducible results, we recommend multiple iterations of the experiments.
 
 Thirdly, we conducted a study with human participants to compare
 ControlNet's~\cite{zhang2023addingconditionalcontroltexttoimage} ability to
 generate images from sketches with
-PITI~\cite{wang2022pretrainingneedimagetoimagetranslation}, focusing on how
+PITI~\cite{wang2022pretrainingneedimagetoimagetranslation}. We focused on how
 prompts, sketch fidelity, and training data impact image quality and user
 preferences. ControlNet outperformed PITI in image quality, achieving
 better average results, while PITI excelled in sketch fidelity, though at the
