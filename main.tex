@@ -106,7 +106,7 @@ This simple representation is not enough to understand the input. The meaning of
 \subsubsection{Iterative Denoising}
 Iterative denoising is the crucial step in image generation. Remember, the goal is to generate a latent representation of the final image, which can be thought of as a low-dimensional representation, or just a smaller image. We start with random noise in this reduced size. Typically, this would be just a random sample from a Gaussian distribution. The goal will then be to gradually remove the noise to obtain clear, detailed images that match the description from the prompt.
 
-It starts with a noised image, denoted as $x_T$, where $T$ is the total number of steps in the reverse diffusion process. Then the model uses a neural network trained that is trained to evaluate the function $\varepsilon_\theta(x_t,t,c)$ that estimates the noise at the current noised image $x_t$, $0 \leq t \leq T$ in each step, $c$ is the conditioning input. By approximating the current noise, we can just remove the noise, to slightly denoise the image.
+It starts with a noised image, denoted as $x_T$, where $T$ is the total number of steps in the reverse diffusion process. Then the model uses a neural network which is trained to evaluate the function $\varepsilon_\theta(x_t,t,c)$ that estimates the noise at the current noised image $x_t$, $0 \leq t \leq T$ in each step, $c$ is the conditioning input. By approximating the current noise, we can just remove the noise, to slightly denoise the image.
 $$x_{t-1}=x_t-\alpha_t \varepsilon_\theta(x_t,t,c)+ \alpha_t z_t$$
 where $\alpha_t$ controls the step size for noise removal, and $\alpha_t z_t$  ($z_t$ is some Gaussian noise) adds controlled noise to maintain some stochasticity. This update moves the noisy image closer to a cleaner version, progressively refining it. This step is performed $T$-times, and at $t=0$ we arrived at a denoised latent representation of the final image.
 
@@ -137,7 +137,7 @@ To effectively train the decoder, we introduce an additional component, the enco
 
 The reconstruction loss measures the fidelity of the reconstruction. After encoding an image into its latent representation, the decoder attempts to reconstruct the original image from this representation. The reconstruction loss is typically the mean squared error (MSE) between the original and reconstructed images, encouraging the model to learn latent representations that allow for accurate reconstructions.
 
-To prevent the latent space from becoming arbitrarily dispersed and to encourage smooth transitions between points in the latent space, a regularization term based on the Kullback-Leibler (KL) divergence is added. The KL divergence measures how much the distribution of latent variables deviates from a predefined prior distribution, often a standard normal distribution. By minimizing this divergence, the VAE ensures that the latent space is well-structured and that similar images map to nearby points in the latent space.
+To prevent the latent space from becoming arbitrarily dispersed and to encourage smooth transitions between points in the latent space, a regularization term based on the Kullback-Leibler (KL) divergence~\cite{kullback1951OnInformationandSufficiency} is added. The KL divergence measures how much the distribution of latent variables deviates from a predefined prior distribution, often a standard normal distribution. By minimizing this divergence, the VAE ensures that the latent space is well-structured and that similar images map to nearby points in the latent space.
 
 Once trained, the VAE can be used to generate latent representations of images, which are essential for the subsequent training of the U-Net, that we will explore now:
 
@@ -146,7 +146,7 @@ With the trained VAE at hand, the next step is to train the U-Net, a critical co
 
 Begin with a labeled dataset of images. In the case of Stable Diffusion, ImageNet\cite{deng2009imagenet} was used. Each image is passed through the trained encoder of the VAE to obtain its latent representation. This latent space is of lower dimensionality compared to the original image space, making the learning process more computationally efficient.
 
-The now we add Gaussian noise to the latent representation of an image over multiple time steps, ultimately transforming it into a distribution of pure noise. This sequence, called Forward Diffusion, of increasingly noisy images constitutes the training data for the U-Net.
+We now add Gaussian noise to the latent representation of an image over multiple time steps, ultimately transforming it into a distribution of pure noise. This sequence, called Forward Diffusion, of increasingly noisy images constitutes the training data for the U-Net.
 
 The core task of the U-Net is to predict the noise that was added to a given noisy image. For each time step, the U-Net takes as input the noisy image and a conditioning vector derived from the text label using the pretrained transformer. It then predicts the noise component that was added during the forward diffusion process. The true noise component is computed as the difference between consecutive noisy images in the sequence.
 
