@@ -8,16 +8,16 @@ For this study, we sampled 20 unseen sketches and used them to generate images w
 \begin{table}[hbp]
     \begin{center}
         \caption{Average User Ranking (AUR) of result quality and
-        condition fidelity. The results were calculated by obtaining a user preference ranking (1 to 5 indicates worst to best) for the generated images of PITI, ControlNet and ControlNet with a simple prompt.}
+            condition fidelity. The results were calculated by obtaining a user preference ranking (1 to 5 indicates worst to best) for the generated images of PITI, ControlNet and ControlNet with a simple prompt.}
         \label{tab:controlnet:experiment}
         \def\arraystretch{1.1}
         \begin{tabular}{lcc}
             \toprule
-            \textbf{Method}     & \textbf{Result Quality} & \textbf{Condition Fidelity}  \\
+            \textbf{Method}                                                     & \textbf{Result Quality} & \textbf{Condition Fidelity} \\
             \midrule
-            PITI~\cite{wang2022pretrainingneedimagetoimagetranslation} (sketch)            & $2.56 \pm 1.20$         & $3.61 \pm 1.13$ \\
-            ControlNet          & $3.00 \pm 1.16$         & $3.04 \pm 1.23$ \\
-            ControlNet (prompt) & $3.19 \pm 1.20$         & $3.07 \pm 1.22$ \\
+            PITI~\cite{wang2022pretrainingneedimagetoimagetranslation} (sketch) & $2.56 \pm 1.20$         & $3.61 \pm 1.13$             \\
+            ControlNet                                                          & $3.00 \pm 1.16$         & $3.04 \pm 1.23$             \\
+            ControlNet (prompt)                                                 & $3.19 \pm 1.20$         & $3.07 \pm 1.22$             \\
             \bottomrule
         \end{tabular}
     \end{center}
@@ -49,13 +49,13 @@ When we compare our results to the results of the original paper, we can observe
 \begin{table}[hbp]
     \centering
     \scalebox{0.76}{
-    \begin{tabular}{c c c c c}
-        Ground Truth & HED~\cite{xie2015holisticallynestededgedetection} & PITI~\cite{wang2022pretrainingneedimagetoimagetranslation} & ControlNet & ControlNet (prompt) \\
-        \includegraphics[width=0.23\textwidth]{./assets/base_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00066135.pdf}  & \includegraphics[width=0.23\textwidth]{./assets/control_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00066135.pdf} \\
-        \includegraphics[width=0.23\textwidth]{./assets/base_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00065485.pdf} \\
-        \includegraphics[width=0.23\textwidth]{./assets/base_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00065736.pdf} \\
-        \includegraphics[width=0.23\textwidth]{./assets/base_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00066231.pdf}
-    \end{tabular}
+        \begin{tabular}{c c c c c}
+            Ground Truth                                                             & HED~\cite{xie2015holisticallynestededgedetection}                       & PITI~\cite{wang2022pretrainingneedimagetoimagetranslation}               & ControlNet                                                                  & ControlNet (prompt)                                                                \\
+            \includegraphics[width=0.23\textwidth]{./assets/base_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00066135.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00066135.pdf} \\
+            \includegraphics[width=0.23\textwidth]{./assets/base_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00065485.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00065485.pdf} \\
+            \includegraphics[width=0.23\textwidth]{./assets/base_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00065736.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00065736.pdf} \\
+            \includegraphics[width=0.23\textwidth]{./assets/base_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/hed_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/piti_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/control_image_00066231.pdf} & \includegraphics[width=0.23\textwidth]{./assets/prompt_control_image_00066231.pdf}
+        \end{tabular}
     }
     \caption{Examples of generated images, showing the ground truth, the HED image that was used as the input condition, PITI's result, ControlNet's result and lastly, ControlNet's result when using the prompt ``realistic, hd, photo''.}
     \label{tab:controlnet:example}
