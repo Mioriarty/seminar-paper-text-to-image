@@ -50,14 +50,14 @@ $s(x, y)$. PickScore employs $s(x, y)$ on two different images $y_1, y_2$ which
 are both inherent to the prompt $x$. Additionally, the preference distribution
 vector $p$ is available for the data triplet. Let $i$ be the index of the image
 $y_i$, then the predicted preference distribution vector,
-\begin{equation}
+\begin{equation*}
     \hat{p}_i = \frac{\exp s(x, y_i)}{\sum_{j=1}^{2}\exp s(x, y_j)},
-\end{equation}
+\end{equation*}
 is calculated using the softmax-normalization. The model minimizes the
 Kullback-Leibler Divergence~\cite{kullback1951OnInformationandSufficiency} during training to compute its predicted preference,
-\begin{equation}
+\begin{equation*}
     L_{pref} = \sum_{i=1}^{2} p_i (\log p_i - \log\hat{p}_i).
-\end{equation}
+\end{equation*}
 This training objective, is inspired
 by the training objective of the InstructGPT reword model
 objective~\cite{Ouyang2024InstructGPT}. In their experiments, Kirstain et al.
