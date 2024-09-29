@@ -1,8 +1,8 @@
 \subsection{PickScore for W\"urstchen}
-In their experiments, Pernias et al.~\cite{pernias2024wrstchen} are able to show
+In their experiments, Pernias et al.~\cite{pernias2024wrstchen} were able to show
 that their method yields a significant upgrade in computational costs and in
 training time, which sits at a $8\times$ reduction compared to Stable Diffusion
-2.1~\cite{rombach2023sd_2_1}. Another goal of the paper is to keep the level of
+2.1~\cite{rombach2023sd_2_1}. Another goal of the paper was to keep the level of
 image complexity. In order to compare the level of complexity to other models,
 Pernias et al. picked several evaluation methods. They used the
 Fr\'echet Inception Distance~\cite{heusel2018ganstrainedtimescaleupdate} (see
@@ -25,7 +25,7 @@ after demonstrating our results we provide a discussion.
 To imitate human users, language models have recently been trained to replicate
 their behavior. For text-to-image models, Kirstain et
 al.~\cite{kirstain2023pickapic} saw a gap for datasets and models that
-indicate human preference. Thus, Kirstain et al. introduce the dataset
+indicate human preference. Thus, Kirstain et al. introduced the dataset
 Pick-a-Pic which consists of data points that each have a prompt, two images which
 were generated using this prompt, and the respective user preference. For
 collecting the data, the authors constructed the Pick-a-Pic Web App that enables
@@ -34,10 +34,10 @@ Stable Diffusion 2.1~\cite{rombach2023sd_2_1}, Dreamlike Photoreal 2.0~\cite{dre
 Stable Diffusion XL~\cite{podell2024sdxl}. Two of these images are then
 presented, and the user decides which image fits better to the prompt. The
 not-preferred image is then replaced by a new image for the user to choose and so on. Kirstain et al.
-mention that their application was used by intrinsically-motivated users who
-they argue to yield better results than paid annotators as these users have
+mentioned that their application was used by intrinsically-motivated users who
+they argued to yield better results than paid annotators as these users have
 knowledge on how to shape a prompt in order to get the hoped result. The authors
-add a recommendation for researchers to train their model on the Pick-a-Pic
+added a recommendation for researchers to train their model on the Pick-a-Pic
 dataset, because its prompts ``better represent what humans want to generate
 than mundane captions, such as those found in MS-COCO''~\cite{kirstain2023pickapic}.
 
@@ -61,7 +61,7 @@ Kullback-Leibler Divergence~\cite{kullback1951OnInformationandSufficiency} durin
 This training objective, is inspired
 by the training objective of the InstructGPT reword model
 objective~\cite{Ouyang2024InstructGPT}. In their experiments, Kirstain et al.
-find that their method outperforms other competitors and even human experts.
+found that their method outperforms other competitors and even human experts.
 
 \subsubsection{Experiment Description}
 In this section, we demonstrate the setup of our experiment to confirm our
@@ -79,7 +79,7 @@ First, we chose MSCOCO with localized narratives~\cite{PontTuset2020LocalizedNar
 This dataset contains 5000 captions which are highly detailed and multimodal.
 Secondly, we utilize Parti Prompts~\cite{yu2022scalingautoregressivemodelscontentrich}
 containing 1633 prompts. These captions are highly diverse ranging from
-not-detailed to very detailed. Pernias et al. mention that this dataset reflects
+not-detailed to very detailed. Pernias et al. mentioned that this dataset reflects
 the use-case that they intend for their model. In contrast to MSCOCO with
 localized narratives and Parti Prompts the last dataset was not employed by the
 authors of W\"urstchen. For this, we follow the recommendation of Kirstain et
